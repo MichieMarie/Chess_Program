@@ -4,8 +4,8 @@ from datetime import date, datetime
 from pathlib import Path
 import json
 
-from models.player import Player
-from models.round import Round
+from player import Player
+from round import Round
 
 
 @dataclass
