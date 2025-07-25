@@ -4,7 +4,8 @@ from datetime import date, datetime
 from pathlib import Path
 import json
 
-from .player import Player
+from models.player import Player
+from models.round import Round
 
 
 @dataclass
@@ -18,11 +19,10 @@ class Tournament:
     start_date: date
     end_date: date
     venue: Optional[str] = None
+
     players: List[Player] = field(default_factory=list)
-    rounds: List[dict] = field(
-        default_factory=list
-    )  # Replace dict with Round type if modeled
-    current_round_index: Optional[int] = None  # Tracks which round is active
+    rounds: List[Round] = field(default_factory=list)
+    current_round_index: Optional[int] = None
 
     filepath: Optional[Path] = None  # For saving to disk
 
@@ -45,22 +45,30 @@ class Tournament:
             "start_date": self.start_date.isoformat(),
             "end_date": self.end_date.isoformat(),
             "venue": self.venue,
-            "players": [p.serialize() for p in self.players],  # ✅ serialize players
-            "rounds": self.rounds,
+            "players": [p.serialize() for p in self.players],
+            "rounds": [rnd.serialize() for rnd in self.rounds],
             "current_round_index": self.current_round_index,
         }
 
     @classmethod
     def from_dict(cls, data: dict, filepath: Optional[Path] = None) -> "Tournament":
+        # Convert player dicts into Player objects
+        player_objs = [Player(**p) for p in data.get("players", [])]
+        players_by_id = {p.chess_id: p for p in player_objs}
+
+        # Rebuild rounds using players_by_id for match references
+        rounds = [
+            Round.from_list(rnd_data, players_by_id, round_number=i + 1)
+            for i, rnd_data in enumerate(data.get("rounds", []))
+        ]
+
         return cls(
             name=data["name"],
             start_date=datetime.fromisoformat(data["start_date"]).date(),
             end_date=datetime.fromisoformat(data["end_date"]).date(),
             venue=data.get("venue"),
-            players=[
-                Player(**p) for p in data.get("players", [])
-            ],  # ✅ deserialize players
-            rounds=data.get("rounds", []),
+            players=player_objs,
+            rounds=rounds,
             current_round_index=data.get("current_round_index"),
             filepath=filepath,
         )
