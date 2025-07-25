@@ -23,7 +23,8 @@ class TournamentManager:
                     print(filepath, "is invalid JSON file.")
 
     def create(self, name: str) -> Tournament:
-        filepath: Path = self.data_folder / (name.replace(" ", "") + ".json")
+        filepath = self.data_folder / name.replace(" ", "")
+        filepath = filepath.with_suffix(".json")
         today: date = date.today()
 
         # TODO: Replace hardcoded dates with user input from create_tournament.py
@@ -40,6 +41,12 @@ class TournamentManager:
 
     def get_all(self) -> List[Tournament]:
         return self.tournaments
+
+    def get_by_name(self, name: str) -> Optional[Tournament]:
+        for t in self.tournaments:
+            if t.name == name:
+                return t
+        return None
 
     def active_tournament(self) -> Optional[Tournament]:
         for tournament in reversed(self.tournaments):

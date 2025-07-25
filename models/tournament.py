@@ -4,6 +4,8 @@ from datetime import date, datetime
 from pathlib import Path
 import json
 
+from .player import Player
+
 
 @dataclass
 class Tournament:
@@ -16,10 +18,7 @@ class Tournament:
     start_date: date
     end_date: date
     venue: Optional[str] = None
-
-    players: List[dict] = field(
-        default_factory=list
-    )  # Replace dict with Player type if available
+    players: List[Player] = field(default_factory=list)
     rounds: List[dict] = field(
         default_factory=list
     )  # Replace dict with Round type if modeled
@@ -46,7 +45,7 @@ class Tournament:
             "start_date": self.start_date.isoformat(),
             "end_date": self.end_date.isoformat(),
             "venue": self.venue,
-            "players": self.players,
+            "players": [p.serialize() for p in self.players],  # ✅ serialize players
             "rounds": self.rounds,
             "current_round_index": self.current_round_index,
         }
@@ -58,7 +57,9 @@ class Tournament:
             start_date=datetime.fromisoformat(data["start_date"]).date(),
             end_date=datetime.fromisoformat(data["end_date"]).date(),
             venue=data.get("venue"),
-            players=data.get("players", []),
+            players=[
+                Player(**p) for p in data.get("players", [])
+            ],  # ✅ deserialize players
             rounds=data.get("rounds", []),
             current_round_index=data.get("current_round_index"),
             filepath=filepath,
