@@ -1,27 +1,48 @@
 import json
 from pathlib import Path
+from datetime import date
+from typing import List, Optional
 
 from .tournament import Tournament
 
-class TournamentManager:
 
-    def __init__(self, data_folder="data/tournaments"):
-        datadir = Path(data_folder)
+class TournamentManager:
+    def __init__(self, data_folder: str = "data/tournaments") -> None:
+        datadir: Path = Path(data_folder)
         self.data_folder = datadir
-        self.tournaments = []
+        self.tournaments: List[Tournament] = []
+
         for filepath in datadir.iterdir():
             if filepath.is_file() and filepath.suffix == ".json":
                 try:
-                    self.tournaments.append(Tournament(filepath))
+                    with open(filepath) as f:
+                        data: dict = json.load(f)
+                    tournament = Tournament.from_dict(data, filepath=filepath)
+                    self.tournaments.append(tournament)
                 except json.JSONDecodeError:
                     print(filepath, "is invalid JSON file.")
-    def create(self, name):
-        filepath = self.data_folder / (name.replace(" ", "") + ".json")
-        tournament = Tournament(name=name, filepath=filepath)
+
+    def create(self, name: str) -> Tournament:
+        filepath: Path = self.data_folder / (name.replace(" ", "") + ".json")
+        today: date = date.today()
+
+        # TODO: Replace hardcoded dates with user input from create_tournament.py
+        tournament = Tournament(
+            name=name, start_date=today, end_date=today, filepath=filepath
+        )
         tournament.save()
 
         self.tournaments.append(tournament)
         return tournament
 
-    def is_active(self):
-        tournaments = []
+    def save(self, tournament: Tournament) -> None:
+        tournament.save()
+
+    def get_all(self) -> List[Tournament]:
+        return self.tournaments
+
+    def active_tournament(self) -> Optional[Tournament]:
+        for tournament in reversed(self.tournaments):
+            if tournament.is_active():
+                return tournament
+        return None

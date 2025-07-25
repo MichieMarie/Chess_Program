@@ -11,13 +11,19 @@ class Tournament:
     Represents a local chess tournament.
     Holds metadata and structure but does not perform logic like matchmaking.
     """
+
     name: str
     start_date: date
     end_date: date
     venue: Optional[str] = None
 
-    players: List[dict] = field(default_factory=list)   # Replace dict with Player type if available
-    matches: List[dict] = field(default_factory=list)   # Replace dict with Match or Round if modeled
+    players: List[dict] = field(
+        default_factory=list
+    )  # Replace dict with Player type if available
+    rounds: List[dict] = field(
+        default_factory=list
+    )  # Replace dict with Round type if modeled
+    current_round_index: Optional[int] = None  # Tracks which round is active
 
     filepath: Optional[Path] = None  # For saving to disk
 
@@ -41,7 +47,8 @@ class Tournament:
             "end_date": self.end_date.isoformat(),
             "venue": self.venue,
             "players": self.players,
-            "matches": self.matches,
+            "rounds": self.rounds,
+            "current_round_index": self.current_round_index,
         }
 
     @classmethod
@@ -52,6 +59,7 @@ class Tournament:
             end_date=datetime.fromisoformat(data["end_date"]).date(),
             venue=data.get("venue"),
             players=data.get("players", []),
-            matches=data.get("matches", []),
-            filepath=filepath
+            rounds=data.get("rounds", []),
+            current_round_index=data.get("current_round_index"),
+            filepath=filepath,
         )
