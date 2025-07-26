@@ -4,8 +4,8 @@ from datetime import date, datetime
 from pathlib import Path
 import json
 
-from player import Player
-from round import Round
+from .player import Player
+from .round import Round
 
 
 @dataclass
@@ -72,3 +72,17 @@ class Tournament:
             current_round_index=data.get("current_round_index"),
             filepath=filepath,
         )
+
+    def get_player_scores(self) -> dict[str, float]:
+        """
+        Returns a dictionary of total points per player in the tournament.
+        Uses match.get_points() to calculate each player's score.
+        """
+        scores = {p.chess_id: 0.0 for p in self.players}
+
+        for rnd in self.rounds:
+            for match in rnd.matches:
+                for player in (match.player1, match.player2):
+                    scores[player.chess_id] += match.get_points(player)
+
+        return scores

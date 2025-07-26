@@ -12,7 +12,6 @@ class Match:
 
     player1: Player
     player2: Player
-    table_number: int
     winner: Optional[str] = None  # "player1", "player2", "draw", or None
     completed: bool = False
 
@@ -37,13 +36,22 @@ class Match:
             return 1.0
         return 0.0
 
+    def update_result(self, winner: str) -> None:
+        """
+        Sets the result of the match.
+        Acceptable values for `winner`: "player1", "player2", "draw"
+        """
+        if winner not in {"player1", "player2", "draw"}:
+            raise ValueError("Winner must be 'player1', 'player2', or 'draw'")
+        self.winner = winner
+        self.completed = True
+
     def serialize(self) -> dict:
         """Converts the match to a JSON-serializable dictionary."""
         return {
             "players": [self.player1.chess_id, self.player2.chess_id],
             "winner": self.winner,
             "completed": self.completed,
-            "table_number": self.table_number,
         }
 
     @classmethod
@@ -56,7 +64,6 @@ class Match:
         return cls(
             player1=players_by_id[player1_id],
             player2=players_by_id[player2_id],
-            table_number=data["table_number"],
             winner=data.get("winner"),
             completed=data.get("completed", False),
         )
