@@ -73,7 +73,7 @@ class Tournament:
             filepath=filepath,
         )
 
-    def get_player_scores(self) -> dict[str, float]:
+    def get_player_scores(self) -> dict[Player, float]:
         """
         Returns a dictionary of total points per player in the tournament.
         Uses match.get_points() to calculate each player's score.
