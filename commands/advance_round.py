@@ -1,9 +1,7 @@
 from random import shuffle
 from typing import List
 
-from models import Round
-from models import Match
-from models import Tournament
+from models import Round, Match, Tournament
 
 from .base import BaseCommand
 from .context import Context

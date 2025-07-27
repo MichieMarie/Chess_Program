@@ -4,8 +4,7 @@ from .context import Context
 from .base import BaseCommand
 
 if TYPE_CHECKING:
-    from models import Tournament
-    from models import Match
+    from models import Tournament, Match
 
 
 class MatchResultsCmd(BaseCommand):
