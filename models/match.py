@@ -8,6 +8,12 @@ from .player import Player
 class Match:
     """
     Represents a single match between two players in a round.
+
+    Attributes:
+        player1 (Player): The first player.
+        player2 (Player): The second player.
+        winner (Optional[str]): "player1", "player2", "draw", or None.
+        completed (bool): True if match has been completed.
     """
 
     player1: Player
@@ -16,15 +22,22 @@ class Match:
     completed: bool = False
 
     def is_draw(self) -> bool:
-        """Returns True if the match ended in a draw."""
+        """
+        Check if match is a draw.
+        Returns:
+            bool: True if a match is completed with no winners; False otherwise.
+        """
         return self.completed and self.winner == "draw"
 
     def get_points(self, player: Player) -> float:
         """
-        Returns how many points the given player earned in this match.
-        - 1.0 for a win
-        - 0.5 for a draw
-        - 0.0 for a loss or incomplete match
+        Calculates how many points the given player earned in this match.
+
+        Args:
+            player (Player): The player to evaluate.
+
+        Returns:
+            float: 1.0 for a win, 0.5 for a draw, 0.0 for a loss or if incomplete.
         """
         if not self.completed:
             return 0.0
@@ -38,8 +51,13 @@ class Match:
 
     def update_result(self, winner: str) -> None:
         """
-        Sets the result of the match.
-        Acceptable values for `winner`: "player1", "player2", "draw"
+         Sets the result of the match.
+
+        Args:
+            winner (str): One of "player1", "player2", or "draw".
+
+        Raises:
+            ValueError: If the winner argument is not one of the accepted values.
         """
         if winner not in {"player1", "player2", "draw"}:
             raise ValueError("Winner must be 'player1', 'player2', or 'draw'")
@@ -47,7 +65,10 @@ class Match:
         self.completed = True
 
     def serialize(self) -> dict:
-        """Converts the match to a JSON-serializable dictionary."""
+        """Converts the match into a dictionary suitable for JSON serialization.
+
+        Returns:
+            dict: A dictionary with player IDs, winner, and completion status."""
         return {
             "players": [self.player1.chess_id, self.player2.chess_id],
             "winner": self.winner,
@@ -57,8 +78,14 @@ class Match:
     @classmethod
     def from_dict(cls, data: dict, players_by_id: dict) -> "Match":
         """
-        Reconstructs a Match from a dictionary and a lookup of players by chess_id.
-        The key 'players' should be a list of 2 chess IDs.
+        Reconstructs a Match object from a dictionary.
+
+        Args:
+            data (dict): Dictionary with keys 'players', 'winner', and 'completed'.
+            players_by_id (dict): Dictionary mapping chess_id to Player objects.
+
+        Returns:
+            Match: The reconstructed Match object.
         """
         player1_id, player2_id = data["players"]
         return cls(
