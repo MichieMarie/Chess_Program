@@ -1,40 +1,66 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
-from datetime import datetime
+from typing import List
 
 from .match import Match
 
 
 @dataclass
 class Round:
+    """
+    Represents one round of a tournament.
+
+    Attributes:
+        round_number (int): The number of the round in the tournament.
+        matches (List[Match]): List of matches in the round.
+        is_complete (bool): Whether the round has officially ended.
+    """
+
     round_number: int
     matches: List[Match] = field(default_factory=list)
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    is_complete: bool = False
 
     def is_complete(self) -> bool:
-        """Returns True if all matches in this round are completed."""
+        """
+        Checks if all matches in the round are complete.
+
+        Returns:
+            bool: True if all matches are marked completed; False otherwise.
+        """
         return all(match.completed for match in self.matches)
 
     def name(self) -> str:
-        """Returns a display name like 'Round 1'."""
+        """
+        Gets the display name of the round.
+
+        Returns:
+            str: A string like 'Round 1'.
+        """
         return f"Round {self.round_number}"
 
-    def start(self):
-        """Marks the round as started."""
-        self.start_time = datetime.now()
-
-    def end(self):
-        """Marks the round as completed (timestamp only). Use is_complete() to check match status."""
-        self.end_time = datetime.now()
-
     def serialize(self) -> List[dict]:
-        """Serialize matches for saving to JSON."""
+        """
+        Serializes the matches in this round to a list of dictionaries,
+        suitable for JSON storage.
+
+        Returns:
+            List[dict]: A list of serialized match dictionaries.
+        """
         return [match.serialize() for match in self.matches]
 
     @classmethod
     def from_list(
         cls, match_data_list: List[dict], players_by_id: dict, round_number: int
     ) -> "Round":
+        """
+        Reconstructs a Round from serialized match data and a player lookup.
+
+        Args:
+            match_data_list (List[dict]): List of serialized match data.
+            players_by_id (dict): Mapping of player chess IDs to Player objects.
+            round_number (int): The round number to assign.
+
+        Returns:
+            Round: A Round object reconstructed from the provided data.
+        """
         matches = [Match.from_dict(md, players_by_id) for md in match_data_list]
         return cls(round_number=round_number, matches=matches)

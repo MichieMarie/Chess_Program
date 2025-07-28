@@ -65,10 +65,12 @@ class Match:
         self.completed = True
 
     def serialize(self) -> dict:
-        """Converts the match into a dictionary suitable for JSON serialization.
+        """
+        Converts the match into a dictionary suitable for JSON serialization.
 
         Returns:
-            dict: A dictionary with player IDs, winner, and completion status."""
+            dict: A dictionary with player IDs, winner, and completion status.
+        """
         return {
             "players": [self.player1.chess_id, self.player2.chess_id],
             "winner": self.winner,
