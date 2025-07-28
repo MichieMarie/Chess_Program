@@ -115,18 +115,18 @@ class Tournament:
         )
 
     @property
-    def player_scores(self) -> dict[str, float]:
+    def player_scores(self) -> dict[Player, float]:
         """
         Calculates total points earned by each player in the tournament.
 
         Returns:
-            dict[Player, float]: Dictionary mapping player chess IDs to total points earned.
+            dict[Player, float]: Dictionary mapping Player objects to total points earned.
         """
-        scores = {p.chess_id: 0.0 for p in self.players}
+        scores = {p: 0.0 for p in self.players}
 
         for rnd in self.rounds:
             for match in rnd.matches:
                 for player in (match.player1, match.player2):
-                    scores[player.chess_id] += match.get_points(player)
+                    scores[player] += match.get_points(player)
 
         return scores
