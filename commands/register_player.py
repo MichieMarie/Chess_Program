@@ -9,13 +9,32 @@ from .context import Context
 
 
 class RegisterPlayerCmd(BaseCommand):
-    """Command to register a player to an active tournament by searching club records."""
+    """
+    Command to register a player to an active tournament by searching club records.
+
+    Attributes:
+        tournament (Tournament): The tournament players are registering into.
+    """
 
     def __init__(self, tournament: Tournament) -> None:
+        """
+        Initialize the command with the given tournament.
+
+        Args:
+            tournament (Tournament): The tournament being updated.
+        """
         self.tournament: Tournament = tournament
 
     def player_search(self) -> Context:
-        """Search for a player by name or chess ID, then register them to the tournament."""
+        """
+        Search for a player by name or chess ID, then register them to the tournament. Saves tournament player
+        registration to data/tournament.
+
+        Returns:
+            Context: The updated tournament view after successful registration.
+
+        If no players are found, the user may choose to go to the club registration screen.
+        """
         search: str = input("Enter player name or chess ID to search: ").strip().lower()
 
         if not search:
@@ -57,7 +76,7 @@ class RegisterPlayerCmd(BaseCommand):
             print(f"{i}. {player.name} ({player.chess_id})")
 
         choice: str = input(
-            "Select player number to register or press Enter to cancel: "
+            "Enter the number of the player to register, or press Enter to cancel: "
         ).strip()
         if not choice.isdigit() or not (1 <= int(choice) <= len(player_matches)):
             print("Registration cancelled.")
@@ -69,11 +88,16 @@ class RegisterPlayerCmd(BaseCommand):
             print(f"{selected_player.name} is already registered.")
         else:
             self.tournament.players.append(selected_player)
-            print(f"{selected_player.name} registered for tournament.")
+            print(f"{selected_player.name} is registered for {self.tournament.name}.")
             self.tournament.save()
 
         return Context("tournament-view", tournament=self.tournament)
 
     def execute(self) -> Context:
-        """Executes the player registration command."""
+        """
+        Executes the player registration flow.
+
+        Returns:
+            Context: The tournament view after search and registration.
+        """
         return self.player_search()

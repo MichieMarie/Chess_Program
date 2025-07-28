@@ -42,7 +42,13 @@ class MatchResultsCmd(BaseCommand):
             match: Match
             print(f"\nMatch {idx}: {match.player1.name} vs {match.player2.name}")
             while True:
-                result: str = input("Who won? (1/2/d for draw): ").strip().lower()
+                result: str = (
+                    input(
+                        f"Enter the winner (1 = {match.player1.name}, 2 = {match.player2.name}, d = draw): "
+                    )
+                    .strip()
+                    .lower()
+                )
                 if result == "1":
                     match.update_result("player1")
                     break
