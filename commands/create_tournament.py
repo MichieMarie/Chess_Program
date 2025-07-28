@@ -6,14 +6,23 @@ from .base import BaseCommand
 
 
 class CreateTournamentCmd(BaseCommand):
-    """Command to create a new tournament"""
+    """
+    Command to create a new tournament.
 
-    def __init__(self, name: str) -> None:
-        self.name: str = name
+    Prompts the user for name, venue, start date, and end date.
+    """
 
     def execute(self) -> Context:
-        """Prompts for tournament dates and creates the tournament"""
+        """
+        Prompts for tournament details and creates the tournament.
+
+        Returns:
+            Context: The updated tournament view after creation.
+        """
         tm: TournamentManager = TournamentManager()
+
+        name = input("Enter tournament name: ").strip()
+        venue = input("Enter tournament venue (optional): ").strip() or None
 
         def prompt_date(prompt: str) -> datetime.date:
             while True:
@@ -31,7 +40,10 @@ class CreateTournamentCmd(BaseCommand):
             return Context("main")
 
         tournament: Tournament = tm.create(
-            name=self.name, start_date=start_date, end_date=end_date
+            name=name,
+            venue=venue,
+            start_date=start_date,
+            end_date=end_date,
         )
 
         return Context("tournament-view", tournament=tournament)

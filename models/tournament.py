@@ -56,7 +56,7 @@ class Tournament:
 
     def save(self) -> None:
         """
-        Saves the tournament data to the file specified in `filepath`.
+        Saves the tournament data to data/tournaments.
 
         Raises:
             ValueError: If no filepath is specified.

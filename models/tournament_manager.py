@@ -26,26 +26,32 @@ class TournamentManager:
                 except json.JSONDecodeError:
                     print(filepath, "is invalid JSON file.")
 
-    def create(self, name: str, start_date: date, end_date: date) -> Tournament:
+    def create(
+        self, name: str, start_date: date, end_date: date, venue: Optional[str] = None
+    ) -> Tournament:
         """
-        Creates a new tournament and saves it to a file.
+        Create and save a new tournament to disk.
 
         Args:
             name (str): Tournament name.
             start_date (date): Start date of the tournament.
             end_date (date): End date of the tournament.
+            venue (Optional[str]): Optional venue location.
 
         Returns:
-            Tournament: The newly created Tournament instance.
+            Tournament: The newly created Tournament object.
         """
         filepath = self.data_folder / name.replace(" ", "")
         filepath = filepath.with_suffix(".json")
 
         tournament = Tournament(
-            name=name, start_date=start_date, end_date=end_date, filepath=filepath
+            name=name,
+            start_date=start_date,
+            end_date=end_date,
+            venue=venue,
+            filepath=filepath,
         )
         tournament.save()
-
         self.tournaments.append(tournament)
         return tournament
 
