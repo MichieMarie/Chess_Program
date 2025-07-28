@@ -7,6 +7,10 @@ from .tournament import Tournament
 
 
 class TournamentManager:
+    """
+    Manages tournament creation and updates.
+    """
+
     def __init__(self, data_folder: str = "data/tournaments") -> None:
         datadir: Path = Path(data_folder)
         self.data_folder = datadir
@@ -22,14 +26,23 @@ class TournamentManager:
                 except json.JSONDecodeError:
                     print(filepath, "is invalid JSON file.")
 
-    def create(self, name: str) -> Tournament:
+    def create(self, name: str, start_date: date, end_date: date) -> Tournament:
+        """
+        Creates a new tournament and saves it to a file.
+
+        Args:
+            name (str): Tournament name.
+            start_date (date): Start date of the tournament.
+            end_date (date): End date of the tournament.
+
+        Returns:
+            Tournament: The newly created Tournament instance.
+        """
         filepath = self.data_folder / name.replace(" ", "")
         filepath = filepath.with_suffix(".json")
-        today: date = date.today()
 
-        # TODO: Replace hardcoded dates with user input from create_tournament.py
         tournament = Tournament(
-            name=name, start_date=today, end_date=today, filepath=filepath
+            name=name, start_date=start_date, end_date=end_date, filepath=filepath
         )
         tournament.save()
 
@@ -37,6 +50,7 @@ class TournamentManager:
         return tournament
 
     def save(self, tournament: Tournament) -> None:
+        """Saves tournament data to a file in data/tournaments."""
         tournament.save()
 
     def get_all(self) -> List[Tournament]:

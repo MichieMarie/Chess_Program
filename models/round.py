@@ -12,21 +12,11 @@ class Round:
     Attributes:
         round_number (int): The number of the round in the tournament.
         matches (List[Match]): List of matches in the round.
-        is_complete (bool): Whether the round has officially ended.
     """
 
     round_number: int
     matches: List[Match] = field(default_factory=list)
     is_complete: bool = False
-
-    def is_complete(self) -> bool:
-        """
-        Checks if all matches in the round are complete.
-
-        Returns:
-            bool: True if all matches are marked completed; False otherwise.
-        """
-        return all(match.completed for match in self.matches)
 
     def name(self) -> str:
         """
