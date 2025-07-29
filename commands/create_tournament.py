@@ -37,7 +37,7 @@ class CreateTournamentCmd(BaseCommand):
 
         if end_date < start_date:
             print("End date cannot be before start date.")
-            return Context("main")
+            return Context("main-menu")
 
         tournament: Tournament = tm.create(
             name=name,

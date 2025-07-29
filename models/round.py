@@ -18,6 +18,7 @@ class Round:
     matches: List[Match] = field(default_factory=list)
     is_complete: bool = False
 
+    @property
     def name(self) -> str:
         """
         Gets the display name of the round.

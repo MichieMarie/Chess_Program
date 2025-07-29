@@ -38,7 +38,7 @@ class TournamentReportCmd(BaseCommand):
                         <td>
                             <strong>{p.name}</strong><br>
                             From {p.club_name}<br>
-                            Tournament points: {scores.get(p.chess_id, 0.0)}
+                            Tournament points: {scores.get(p, 0.0)}
                         </td>
                     """
                 else:

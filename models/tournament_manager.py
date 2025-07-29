@@ -55,10 +55,6 @@ class TournamentManager:
         self.tournaments.append(tournament)
         return tournament
 
-    def save(self, tournament: Tournament) -> None:
-        """Saves tournament data to a file in data/tournaments."""
-        tournament.save()
-
     def get_all(self) -> List[Tournament]:
         return self.tournaments
 

@@ -100,4 +100,4 @@ class TournamentListCmd(BaseCommand):
             return Context("tournament-view", tournament=tournament)
 
         print("Invalid selection.")
-        return Context("home")
+        return Context("main-menu")
