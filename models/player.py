@@ -6,13 +6,14 @@ class Player:
 
     DATE_FORMAT = "%d-%m-%Y"
 
-    def __init__(self, name, email, chess_id, birthday):
+    def __init__(self, name, email, chess_id, birthday, club_name="Unknown Club"):
         if not name:
             raise ValueError("Player name is required!")
 
         self.name = name
         self.email = email
         self.chess_id = chess_id
+        self.club_name = club_name
 
         # The class uses a private attribute for the birthdate (datetime format)
         self._birthdate = None
@@ -55,4 +56,5 @@ class Player:
         # We make sure to use the str representation of the date
         # datetime is not natively serializable in JSON
         data["birthday"] = self.birthday
+        data["club_name"] = self.club_name
         return data

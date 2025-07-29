@@ -47,6 +47,7 @@ class RegisterPlayerCmd(BaseCommand):
         for filepath in clubs_dir.glob("*.json"):
             with open(filepath) as f:
                 data = json.load(f)
+                club_name = data.get("name", "Unknown Club")
                 for p_data in data.get("players", []):
                     if (
                         search in p_data["name"].lower()
@@ -57,6 +58,7 @@ class RegisterPlayerCmd(BaseCommand):
                             email=p_data["email"],
                             chess_id=p_data["chess_id"],
                             birthday=p_data["birthday"],
+                            club_name=club_name,
                         )
                         player_matches.append(player)
 
