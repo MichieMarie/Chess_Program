@@ -69,6 +69,40 @@ class BaseScreen(ABC):
             except ValueError:
                 print("Please provide a valid date (dd-mm-yyyy)!")
 
+    def input_tournament_dates(self, **kwargs) -> datetime:
+        """
+        Prompts the user for a valid date in dd-mm-yyyy format.
+
+        Returns:
+            datetime: A valid parsed datetime (00:00 time).
+        """
+        while True:
+            value: str = self.input_string(**kwargs)
+            try:
+                return datetime.strptime(value, "%d-%m-%Y")
+            except ValueError:
+                print("Please enter a valid date in the format dd-mm-yyyy.")
+
+    def input_rounds(self, **kwargs) -> int:
+        """
+        Prompts the user for a valid whole number > 0 to represent number of rounds.
+
+        Returns:
+            int: The validated number of rounds.
+        """
+        while True:
+            value: str = self.input_string(**kwargs)
+            try:
+                num = int(value)
+                if num > 0:
+                    return num
+                else:
+                    print("Please enter a number greater than 0.")
+            except ValueError:
+                print(
+                    "Please enter a valid whole number (e.g., 3). No letters or decimals."
+                )
+
     def run(self):
         """Main method to 'run' the screen - displays a message and gets a command"""
         message = getattr(self, "display", None)
