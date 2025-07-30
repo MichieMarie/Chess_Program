@@ -86,7 +86,9 @@ class RegisterPlayerCmd(BaseCommand):
 
         selected_player: Player = player_matches[int(choice) - 1]
 
-        if any(p["chess_id"] == selected_player.chess_id for p in self.tournament.players):
+        if any(
+            p["chess_id"] == selected_player.chess_id for p in self.tournament.players
+        ):
             print(f"{selected_player.name} is already registered.")
         else:
             self.tournament.players.append(
