@@ -28,15 +28,28 @@ class Round:
         """
         return f"Round {self.round_number}"
 
-    def serialize(self) -> List[dict]:
+    def serialize(self) -> dict:
         """
-        Serializes the matches in this round to a list of dictionaries,
-        suitable for JSON storage.
+        Serializes the round to a dictionary for JSON storage.
 
         Returns:
-            List[dict]: A list of serialized match dictionaries.
+            dict: A dictionary with round number, match list, and status.
         """
-        return [match.serialize() for match in self.matches]
+        return {
+            "round_number": self.round_number,
+            "matches": [match.serialize() for match in self.matches],
+            "is_complete": self.is_complete,
+        }
+
+    @classmethod
+    def deserialize(cls, data: dict) -> "Round":
+        if "round_number" not in data:
+            raise ValueError("Invalid round format")
+        return cls(
+            round_number=data["round_number"],
+            matches=data["matches"],
+            is_complete=data.get("is_complete", False),
+        )
 
     @classmethod
     def from_list(
