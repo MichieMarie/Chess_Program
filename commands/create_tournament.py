@@ -1,6 +1,5 @@
 from datetime import datetime
 from models import TournamentManager, Tournament
-
 from .context import Context
 from .base import BaseCommand
 
@@ -9,41 +8,47 @@ class CreateTournamentCmd(BaseCommand):
     """
     Command to create a new tournament.
 
-    Prompts the user for name, venue, start date, and end date.
+    Expects data for tournament name, venue, dates, and number of rounds
+    to be provided during initialization (typically from a screen).
     """
+
+    def __init__(
+        self,
+        name: str,
+        start_date: datetime,
+        end_date: datetime,
+        venue: str | None,
+        num_rounds: int,
+    ) -> None:
+        """
+        Initialize the tournament creation command with user-provided data.
+
+        Args:
+            name (str): Name of the tournament.
+            start_date (date): Start date.
+            end_date (date): End date.
+            venue (str | None): Venue name or None if blank.
+            num_rounds (int): Total number of rounds.
+        """
+        self.name = name
+        self.start_date = start_date
+        self.end_date = end_date
+        self.venue = venue
+        self.num_rounds = num_rounds
 
     def execute(self) -> Context:
         """
-        Prompts for tournament details and creates the tournament.
+        Executes the tournament creation using pre-gathered data.
 
         Returns:
-            Context: The updated tournament view after creation.
+            Context: Context showing the newly created tournament.
         """
         tm: TournamentManager = TournamentManager()
-
-        name = input("Enter tournament name: ").strip()
-        venue = input("Enter tournament venue (optional): ").strip() or None
-
-        def prompt_date(prompt: str) -> datetime.date:
-            while True:
-                user_input = input(prompt + " (YYYY-MM-DD): ")
-                try:
-                    return datetime.strptime(user_input, "%Y-%m-%d").date()
-                except ValueError:
-                    print("Invalid format. Please use YYYY-MM-DD.")
-
-        start_date = prompt_date("Enter tournament start date")
-        end_date = prompt_date("Enter tournament end date")
-
-        if end_date < start_date:
-            print("End date cannot be before start date.")
-            return Context("main-menu")
-
         tournament: Tournament = tm.create(
-            name=name,
-            venue=venue,
-            start_date=start_date,
-            end_date=end_date,
+            name=self.name,
+            start_date=self.start_date,
+            end_date=self.end_date,
+            venue=self.venue,
+            num_rounds=self.num_rounds,
         )
-
         return Context("tournament-view", tournament=tournament)
