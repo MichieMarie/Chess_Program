@@ -1,132 +1,144 @@
+from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import List, Optional
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
+from typing import List, Optional
 import json
 
-from .player import Player
+from .match import Match
 from .round import Round
+from .player import Player
 
 
 @dataclass
 class Tournament:
-    """
-    Represents a local chess tournament.
-
-    Attributes:
-        name (str): Name of the tournament.
-        start_date (date): Tournament start date.
-        end_date (date): Tournament end date.
-        venue (Optional[str]): Venue where the tournament is held.
-        players (List[Player]): Registered players.
-        rounds (List[Round]): Rounds of the tournament.
-        current_round_index (Optional[int]): Index of the current round (0-based).
-        filepath (Optional[Path]): Filepath for saving to disk.
-    """
-
     name: str
-    start_date: date
-    end_date: date
-    venue: Optional[str] = None
-
-    players: List[Player] = field(default_factory=list)
+    start_date: datetime
+    end_date: datetime
+    venue: str
+    players: List[dict[str, str]] = field(default_factory=list)
     rounds: List[Round] = field(default_factory=list)
-    current_round_index: Optional[int] = None
-
+    current_round_index: int = -1
+    num_rounds: int = 4
     filepath: Optional[Path] = None
+    is_complete: bool = False
 
-    def is_active(self) -> bool:
+    def player_scores(self) -> dict[str, float]:
         """
-        Determines if the tournament is currently active based on the date.
-
-        Returns:
-            bool: True if today is between the start and end dates, inclusive.
-        """
-        today: date = date.today()
-        return self.start_date <= today <= self.end_date
-
-    def is_complete(self) -> bool:
-        """
-        Checks whether the tournament has ended.
+        Calculates total tournament points for each player.
 
         Returns:
-            bool: True if today's date is after the end date.
+            dict[str, float]: Dictionary mapping player chess_id to cumulative score.
         """
-        return date.today() > self.end_date
+        scores: dict[str, float] = {p["chess_id"]: 0.0 for p in self.players}
 
-    def save(self) -> None:
-        """
-        Saves the tournament data to data/tournaments.
+        for rnd in self.rounds:
+            for match in rnd.matches:
+                if match.winner == "draw":
+                    scores[match.player1.chess_id] += 0.5
+                    scores[match.player2.chess_id] += 0.5
+                elif match.winner == "player1":
+                    scores[match.player1.chess_id] += 1.0
+                elif match.winner == "player2":
+                    scores[match.player2.chess_id] += 1.0
 
-        Raises:
-            ValueError: If no filepath is specified.
-        """
-        if not self.filepath:
-            raise ValueError("No filepath provided for saving.")
-        with open(self.filepath, "w") as f:
-            json.dump(self.to_dict(), f, default=str, indent=2)
+        return scores
 
     def to_dict(self) -> dict:
         """
         Converts the tournament to a dictionary suitable for JSON serialization.
-
-        Returns:
-            dict: Serialized tournament data.
         """
         return {
             "name": self.name,
             "start_date": self.start_date.isoformat(),
             "end_date": self.end_date.isoformat(),
             "venue": self.venue,
-            "players": [p.serialize() for p in self.players],
+            "players": [
+                {
+                    "name": p["name"],
+                    "chess_id": p["chess_id"],
+                    "club_name": p["club_name"],
+                }
+                for p in self.players
+            ],
             "rounds": [rnd.serialize() for rnd in self.rounds],
             "current_round_index": self.current_round_index,
+            "num_rounds": self.num_rounds,
+            "is_complete": self.is_complete,
         }
 
     @classmethod
-    def from_dict(cls, data: dict, filepath: Optional[Path] = None) -> "Tournament":
+    def from_dict(cls, data: dict, filepath: Optional[Path] = None) -> Tournament:
         """
-        Reconstructs a Tournament from dictionary data and an optional file path.
+        Create a Tournament instance from a dictionary (e.g., loaded from JSON).
+        Handles both modern and legacy round formats.
 
         Args:
-            data (dict): Dictionary containing tournament data.
-            filepath (Optional[Path]): Path to the tournament JSON file, if any.
+            data (dict): The dictionary of tournament data.
+            filepath (Optional[Path]): Filepath to the tournament file.
 
         Returns:
-            Tournament: A reconstructed Tournament instance.
+            Tournament: The reconstructed Tournament instance.
         """
-        player_objs = [Player(**p) for p in data.get("players", [])]
-        players_by_id = {p.chess_id: p for p in player_objs}
+        players: List[dict[str, str]] = data.get("players", [])
 
-        rounds = [
-            Round.from_list(rnd_data, players_by_id, round_number=i + 1)
-            for i, rnd_data in enumerate(data.get("rounds", []))
-        ]
+        raw_rounds = data.get("rounds", [])
+        rounds: List[Round] = []
+
+        if raw_rounds and isinstance(raw_rounds[0], list):
+            # Legacy format: list of match dicts per round
+            for idx, match_list in enumerate(raw_rounds, start=1):
+                matches = []
+                for m in match_list:
+                    p1_id, p2_id = m["players"]
+                    winner = m.get("winner")
+
+                    # Determine result string (for our app's format)
+                    if winner is None:
+                        result = "draw"
+                    elif winner == p1_id:
+                        result = "player1"
+                    elif winner == p2_id:
+                        result = "player2"
+                    else:
+                        result = None  # fallback
+
+                    match = Match(
+                        player1=Player(
+                            name="", email="", chess_id=p1_id, birthday="", club_name=""
+                        ),
+                        player2=Player(
+                            name="", email="", chess_id=p2_id, birthday="", club_name=""
+                        ),
+                        winner=result,
+                    )
+                    matches.append(match)
+
+                rounds.append(Round(matches=matches, round_number=idx))
+        else:
+            # Current format
+            rounds = [Round.deserialize(rdata) for rdata in raw_rounds]
 
         return cls(
             name=data["name"],
-            start_date=datetime.fromisoformat(data["start_date"]).date(),
-            end_date=datetime.fromisoformat(data["end_date"]).date(),
-            venue=data.get("venue"),
-            players=player_objs,
+            start_date=datetime.fromisoformat(data["start_date"]),
+            end_date=datetime.fromisoformat(data["end_date"]),
+            venue=data["venue"],
+            players=players,
             rounds=rounds,
-            current_round_index=data.get("current_round_index"),
+            current_round_index=data.get("current_round_index", -1),
+            num_rounds=data.get("num_rounds", 4),
             filepath=filepath,
+            is_complete=data.get("is_complete", False),
         )
 
-    @property
-    def player_scores(self) -> dict[Player, float]:
+    def save(self) -> None:
         """
-        Calculates total points earned by each player in the tournament.
-
-        Returns:
-            dict[Player, float]: Dictionary mapping Player objects to total points earned.
+        Save the current tournament state to its JSON file.
         """
-        scores = {p: 0.0 for p in self.players}
+        if not self.filepath:
+            raise ValueError("No filepath provided for saving.")
+        with open(self.filepath, "w") as f:
+            json.dump(self.to_dict(), f, default=str, indent=2)
 
-        for rnd in self.rounds:
-            for match in rnd.matches:
-                for player in (match.player1, match.player2):
-                    scores[player] += match.get_points(player)
-
-        return scores
+        print(f"[DEBUG] Saving tournament to: {self.filepath}")

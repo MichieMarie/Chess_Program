@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime
 from typing import List, Optional
 
 from models import TournamentManager, Tournament
@@ -48,7 +48,7 @@ class TournamentListCmd(BaseCommand):
         Returns:
             str: A label indicating the tournament status.
         """
-        today = date.today()
+        today = datetime.today()
         if tournament.start_date > today:
             return "[Upcoming]"
         elif tournament.end_date < today:

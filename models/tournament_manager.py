@@ -1,71 +1,74 @@
 import json
+from datetime import datetime
 from pathlib import Path
-from datetime import date
-from typing import List, Optional
+from typing import Optional
 
 from .tournament import Tournament
 
 
 class TournamentManager:
     """
-    Manages tournament creation and updates.
+    Manages loading, creating, and storing tournaments from disk.
     """
 
     def __init__(self, data_folder: str = "data/tournaments") -> None:
-        datadir: Path = Path(data_folder)
-        self.data_folder = datadir
-        self.tournaments: List[Tournament] = []
+        """
+        Initialize the manager and load tournaments from JSON files.
+
+        Args:
+            data_folder (str): Path to the folder containing tournament files.
+        """
+        project_root = Path(__file__).resolve().parents[1]
+        datadir: Path = project_root / data_folder
+        self.data_folder: Path = datadir
+        self.tournaments: list[Tournament] = []
 
         for filepath in datadir.iterdir():
             if filepath.is_file() and filepath.suffix == ".json":
                 try:
-                    with open(filepath) as f:
-                        data: dict = json.load(f)
-                    tournament = Tournament.from_dict(data, filepath=filepath)
-                    self.tournaments.append(tournament)
+                    with open(filepath, "r") as f:
+                        data = json.load(f)
+                        self.tournaments.append(Tournament.from_dict(data, filepath))
                 except json.JSONDecodeError:
-                    print(filepath, "is invalid JSON file.")
+                    print(filepath, "is an invalid JSON file.")
 
     def create(
-        self, name: str, start_date: date, end_date: date, venue: Optional[str] = None
+        self,
+        name: str,
+        start_date: datetime,
+        end_date: datetime,
+        venue: Optional[str] = None,
+        num_rounds: int = 4,
     ) -> Tournament:
         """
-        Create and save a new tournament to disk.
+        Create a new tournament and save it to disk.
 
         Args:
             name (str): Tournament name.
-            start_date (date): Start date of the tournament.
-            end_date (date): End date of the tournament.
-            venue (Optional[str]): Optional venue location.
+            start_date (date): Tournament start date.
+            end_date (date): Tournament end date.
+            venue (Optional[str]): Tournament venue.
+            num_rounds (int): Total number of rounds.
 
         Returns:
-            Tournament: The newly created Tournament object.
+            Tournament: The created and saved Tournament instance.
         """
-        filepath = self.data_folder / name.replace(" ", "")
-        filepath = filepath.with_suffix(".json")
+        filepath: Path = self.data_folder / (name.replace(" ", "") + ".json")
 
-        tournament = Tournament(
+        tournament: Tournament = Tournament(
             name=name,
             start_date=start_date,
             end_date=end_date,
             venue=venue,
+            num_rounds=num_rounds,
             filepath=filepath,
         )
         tournament.save()
         self.tournaments.append(tournament)
         return tournament
 
-    def get_all(self) -> List[Tournament]:
+    def get_all(self) -> list[Tournament]:
+        """
+        Return all loaded tournaments.
+        """
         return self.tournaments
-
-    def get_by_name(self, name: str) -> Optional[Tournament]:
-        for t in self.tournaments:
-            if t.name == name:
-                return t
-        return None
-
-    def active_tournament(self) -> Optional[Tournament]:
-        for tournament in reversed(self.tournaments):
-            if tournament.is_active():
-                return tournament
-        return None

@@ -26,8 +26,12 @@ class TournamentReportCmd(BaseCommand):
             str: The HTML string representing the players table.
         """
         rows = []
-        players = self.tournament.players[:]
-        scores = self.tournament.player_scores
+        players = sorted(
+            self.tournament.players,
+            key=lambda p: scores.get(p["chess_id"], 0.0),
+            reverse=True,
+        )
+        scores = self.tournament.player_scores()
 
         for i in range(0, len(players), 2):
             row_cells = []
@@ -36,9 +40,9 @@ class TournamentReportCmd(BaseCommand):
                     p = players[i + j]
                     cell = f"""
                         <td>
-                            <strong>{p.name}</strong><br>
-                            From {p.club_name}<br>
-                            Tournament points: {scores.get(p, 0.0)}
+                            <strong>{p['name']}</strong><br>
+                            From {p['club_name']}<br>
+                            Tournament points: {scores.get(p['chess_id'], 0.0)}
                         </td>
                     """
                 else:

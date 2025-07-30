@@ -18,7 +18,7 @@ class Match:
 
     player1: Player
     player2: Player
-    winner: Optional[str] = None  # "player1", "player2", "draw", or None
+    winner: Optional[str] = None
     completed: bool = False
 
     def is_draw(self) -> bool:
@@ -65,15 +65,18 @@ class Match:
         self.completed = True
 
     def serialize(self) -> dict:
-        """
-        Converts the match into a dictionary suitable for JSON serialization.
+        if self.winner == "draw":
+            winner_id = None
+        elif self.winner == "player1":
+            winner_id = self.player1.chess_id
+        elif self.winner == "player2":
+            winner_id = self.player2.chess_id
+        else:
+            winner_id = None
 
-        Returns:
-            dict: A dictionary with player IDs, winner, and completion status.
-        """
         return {
             "players": [self.player1.chess_id, self.player2.chess_id],
-            "winner": self.winner,
+            "winner": winner_id,
             "completed": self.completed,
         }
 
