@@ -42,6 +42,3 @@ class CreateTournament(BaseScreen):
             end_date=data["end_date"],
             num_rounds=data["rounds"],
         )
-
-
-
