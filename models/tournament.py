@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List, Optional
 import json
 
-from .match import Match
+from .match import Match, PLAYER1, PLAYER2, DRAW
 from .round import Round
 from .player import Player
 
@@ -34,12 +34,12 @@ class Tournament:
 
         for rnd in self.rounds:
             for match in rnd.matches:
-                if match.winner == "draw":
+                if match.winner == DRAW:
                     scores[match.player1.chess_id] += 0.5
                     scores[match.player2.chess_id] += 0.5
-                elif match.winner == "player1":
+                elif match.winner == PLAYER1:
                     scores[match.player1.chess_id] += 1.0
-                elif match.winner == "player2":
+                elif match.winner == PLAYER2:
                     scores[match.player2.chess_id] += 1.0
 
         return scores
@@ -95,11 +95,11 @@ class Tournament:
 
                     # Determine result string (for our app's format)
                     if winner is None:
-                        result = "draw"
+                        result = DRAW
                     elif winner == p1_id:
-                        result = "player1"
+                        result = PLAYER1
                     elif winner == p2_id:
-                        result = "player2"
+                        result = PLAYER2
                     else:
                         result = None  # fallback
 

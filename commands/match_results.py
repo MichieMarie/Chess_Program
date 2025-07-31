@@ -2,6 +2,7 @@ from .context import Context
 from .base import BaseCommand
 
 from models import Tournament, Match
+from models.match import PLAYER1, PLAYER2, DRAW
 
 
 class MatchResultsCmd(BaseCommand):
@@ -50,13 +51,13 @@ class MatchResultsCmd(BaseCommand):
                     .lower()
                 )
                 if result == "1":
-                    match.update_result("player1")
+                    match.update_result(PLAYER1)
                     break
                 elif result == "2":
-                    match.update_result("player2")
+                    match.update_result(PLAYER2)
                     break
                 elif result == "d":
-                    match.update_result("draw")
+                    match.update_result(DRAW)
                     break
                 else:
                     print("Invalid input. Type 1, 2, or d.")

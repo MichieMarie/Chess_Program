@@ -47,6 +47,7 @@ class StartTournamentCmd(BaseCommand):
             ValueError: If the number of players is not even.
         """
         players = self.tournament.players[:]
+
         if len(players) % 2 != 0:
             raise ValueError("Tournament must have an even number of players.")
 
@@ -54,7 +55,12 @@ class StartTournamentCmd(BaseCommand):
 
         matches = []
         for i in range(0, len(players), 2):
-            matches.append(Match(player1=players[i], player2=players[i + 1]))
+            matches.append(
+                Match(
+                    player1=players[i],
+                    player2=players[i + 1],
+                )
+            )
 
         return matches
 

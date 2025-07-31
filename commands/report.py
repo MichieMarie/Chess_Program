@@ -5,6 +5,7 @@ from models import Tournament
 
 from .base import BaseCommand
 from .context import Context
+from models.match import PLAYER1, PLAYER2, DRAW
 
 
 class TournamentReportCmd(BaseCommand):
@@ -73,11 +74,11 @@ class TournamentReportCmd(BaseCommand):
             for match in rnd.matches:
                 p1 = match.player1.name
                 p2 = match.player2.name
-                if match.winner == "draw":
+                if match.winner == DRAW:
                     content = f"{p1}<br>{p2}<br><em>Result: Draw</em>"
-                elif match.winner == "player1":
+                elif match.winner == PLAYER1:
                     content = f"{p1} - W<br>{p2}"
-                elif match.winner == "player2":
+                elif match.winner == PLAYER2:
                     content = f"{p1}<br>{p2} - W"
                 else:
                     content = f"{p1}<br>{p2}"
