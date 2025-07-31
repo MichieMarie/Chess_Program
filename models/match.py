@@ -12,7 +12,7 @@ DRAW = "draw"
 @dataclass
 class Match:
     """
-    Represents a single match between two players in a round.
+    Represents a single match between two players in a round. Supports both Player objects and minimal dicts.
 
     Attributes:
         player1 (Player): The first player.
@@ -21,10 +21,52 @@ class Match:
         completed (bool): True if match has been completed.
     """
 
-    player1: Player
-    player2: Player
-    winner: str | None = None
+    player1: Player | dict
+    player2: Player | dict
+    winner: Optional[str] = None
     completed: bool = False
+
+    def _get_name(self, player: Player | dict) -> str:
+        """
+        Retrieves the name for a tournament registrant.
+
+        Supports both full Player objects and minimal tournament player dictionaries.
+
+        Args:
+            player (Player or dict): The registrant to extract the registrant name from.
+
+        Returns:
+            str: The registrant's name.
+        """
+        return player.name if hasattr(player, "name") else player["name"]
+
+    def _get_chess_id(self, player: Player | dict) -> str:
+        """
+        Retrieves the chess ID for a tournament registrant.
+
+        Supports both full Player objects and minimal tournament player dictionaries.
+
+        Args:
+            player (Player or dict): The registrant to extract the chess ID from.
+
+        Returns:
+            str: The registrant's chess ID.
+        """
+        return player.chess_id if hasattr(player, "chess_id") else player["chess_id"]
+
+    def _get_club(self, player: Player | dict) -> str:
+        """
+        Retrieves the club name for a tournament registrant.
+
+        Supports both full Player objects and minimal tournament player dictionaries.
+
+        Args:
+            player (Player or dict): The registrant to extract the club name from.
+
+        Returns:
+            str: The registrant's club name.
+        """
+        return player.club_name if hasattr(player, "club_name") else player["club_name"]
 
     def is_draw(self) -> bool:
         """
@@ -34,7 +76,7 @@ class Match:
         """
         return self.completed and self.winner == DRAW
 
-    def get_points(self, player: Player) -> float:
+    def get_points(self, player: Player | dict) -> float:
         """
         Calculates how many points the given player earned in this match.
 
@@ -48,9 +90,13 @@ class Match:
             return 0.0
         if self.winner == DRAW:
             return 0.5
-        if self.winner == PLAYER1 and player == self.player1:
+        if self.winner == PLAYER1 and self._get_chess_id(player) == self._get_chess_id(
+            self.player1
+        ):
             return 1.0
-        if self.winner == PLAYER2 and player == self.player2:
+        if self.winner == PLAYER2 and self._get_chess_id(player) == self._get_chess_id(
+            self.player2
+        ):
             return 1.0
         return 0.0
 
@@ -79,15 +125,18 @@ class Match:
         if self.winner == DRAW:
             winner_id = None
         elif self.winner == PLAYER1:
-            winner_id = self.player1.chess_id
+            winner_id = self._get_chess_id(self.player1)
         elif self.winner == PLAYER2:
-            winner_id = self.player2.chess_id
+            winner_id = self._get_chess_id(self.player2)
         else:
             winner_id = None
 
         return {
-            "players": [self.player1.chess_id, self.player2.chess_id],
-            "winner": self.winner,
+            "players": [
+                self._get_chess_id(self.player1),
+                self._get_chess_id(self.player2),
+            ],
+            "winner": winner_id,
             "completed": self.completed,
         }
 

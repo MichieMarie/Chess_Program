@@ -23,6 +23,36 @@ class Tournament:
     filepath: Optional[Path] = None
     is_complete: bool = False
 
+    @staticmethod
+    def tournament_registrant(player: Player) -> dict[str, str]:
+        """
+        Extracts minimal tournament registration info from a full Player object.
+
+        Args:
+            player (Player): A Player instance.
+
+        Returns:
+            dict[str, str]: Dictionary with name, club_name, and chess_id.
+        """
+        return {
+            "name": player.name,
+            "chess_id": player.chess_id,
+            "club_name": player.club_name,
+        }
+
+    @staticmethod
+    def tournament_players(players: List[Player]) -> List[dict[str, str]]:
+        """
+        Converts a list of Player objects into tournament registration format.
+
+        Args:
+            players (List[Player]): List of Player instances.
+
+        Returns:
+            List[dict[str, str]]: Simplified player info for tournament storage.
+        """
+        return [Tournament.tournament_registrant(p) for p in players]
+
     def player_scores(self) -> dict[str, float]:
         """
         Calculates total tournament points for each player.
@@ -53,14 +83,7 @@ class Tournament:
             "start_date": self.start_date.isoformat(),
             "end_date": self.end_date.isoformat(),
             "venue": self.venue,
-            "players": [
-                {
-                    "name": p["name"],
-                    "chess_id": p["chess_id"],
-                    "club_name": p["club_name"],
-                }
-                for p in self.players
-            ],
+            "players": self.players,
             "rounds": [rnd.serialize() for rnd in self.rounds],
             "current_round_index": self.current_round_index,
             "num_rounds": self.num_rounds,

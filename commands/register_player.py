@@ -92,11 +92,7 @@ class RegisterPlayerCmd(BaseCommand):
             print(f"{selected_player.name} is already registered.")
         else:
             self.tournament.players.append(
-                {
-                    "name": selected_player.name,
-                    "chess_id": selected_player.chess_id,
-                    "club_name": selected_player.club_name,
-                }
+                Tournament.tournament_registrant(selected_player)
             )
 
             print(f"{selected_player.name} is registered for {self.tournament.name}.")
