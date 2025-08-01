@@ -22,17 +22,7 @@ class AdvanceRoundCmd(BaseCommand):
         Args:
             tournament (Tournament): The tournament to update.
         """
-        self.tournament: Tournament = tournament
-
-    def confirm_round_advance(self) -> bool:
-        """
-        Prompt the user to confirm advancing to the next round.
-
-        Returns:
-            bool: True if user confirms; False otherwise.
-        """
-        answer: str = input("Advance to next round? (y/n): ").strip().lower()
-        return answer == "y"
+        self.tournament = tournament
 
     def generate_match_pairings(self) -> List[Match]:
         """
@@ -42,60 +32,51 @@ class AdvanceRoundCmd(BaseCommand):
         Returns:
             List[Match]: A list of new match pairings.
         """
-        scores: dict = self.tournament.player_scores()
-        sorted_players: List = [
-            p for p, _ in sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        scores = self.tournament.player_scores()
+        registrants_by_id = {p["chess_id"]: p for p in self.tournament.players}
+        sorted_players = [
+            registrants_by_id[cid]
+            for cid in sorted(scores, key=scores.get, reverse=True)
         ]
 
-        matches: List[Match] = []
-        for i in range(0, len(sorted_players), 2):
-            matches.append(
-                Match(player1=sorted_players[i], player2=sorted_players[i + 1])
-            )
-
+        matches = [
+            Match(player1=sorted_players[i], player2=sorted_players[i + 1])
+            for i in range(0, len(sorted_players), 2)
+        ]
         return matches
-
-    def save_tournament(self) -> None:
-        """
-        Save the updated tournament state to disk.
-        """
-        self.tournament.save()
 
     def execute(self) -> Context:
         """
-        Execute the round advancement process.
-
-        Checks if the tournament has started and if more rounds are allowed.
-        If confirmed, generates pairings and appends a new round.
+        Executes the round advancement.
 
         Returns:
-            Context: Updated context for the tournament view screen.
+            Context: Updated tournament view.
         """
         if self.tournament.current_round_index == -1:
-            print("Cannot advance: Tournament has not been started.")
-            return Context(screen="tournament-view", tournament=self.tournament)
+            return Context(
+                "tournament-view",
+                tournament=self.tournament,
+                message="Cannot advance: Tournament has not been started.",
+            )
 
         if self.tournament.current_round_index + 1 >= self.tournament.num_rounds:
-            print("All rounds have been played. The tournament is complete.")
             self.tournament.is_complete = True
-            self.save_tournament()
-            return Context(screen="tournament-view", tournament=self.tournament)
+            self.tournament.save()
+            return Context(
+                "tournament-view",
+                tournament=self.tournament,
+                message="All rounds have been played. The tournament is complete.",
+            )
 
-        if not self.confirm_round_advance():
-            return Context(screen="tournament-view", tournament=self.tournament)
+        matches = self.generate_match_pairings()
+        next_round_number = self.tournament.current_round_index + 1
 
-        matches: List[Match] = self.generate_match_pairings()
-        next_round_number: int = self.tournament.current_round_index + 1
-
-        new_round: Round = Round(
-            matches=matches,
-            round_number=next_round_number,
-        )
+        new_round = Round(round_number=next_round_number, matches=matches)
         self.tournament.rounds.append(new_round)
         self.tournament.current_round_index = next_round_number
 
         if next_round_number + 1 >= self.tournament.num_rounds:
             self.tournament.is_complete = True
 
-        self.save_tournament()
-        return Context(screen="tournament-view", tournament=self.tournament)
+        self.tournament.save()
+        return Context("tournament-view", tournament=self.tournament)
