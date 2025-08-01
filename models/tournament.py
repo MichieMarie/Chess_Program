@@ -78,6 +78,34 @@ class Tournament:
                     scores[cid] += match.get_points(player)
         return scores
 
+    @property
+    def is_overdue(self) -> bool:
+        """
+        Indicates whether the tournament has passed its end date but is not complete.
+
+        Returns:
+            bool: True if today is after end date and not complete.
+        """
+        return datetime.today().date() > self.end_date.date() and not self.is_complete
+
+    @property
+    def status_label(self) -> str:
+        """
+        Returns a string label describing the current status of the tournament.
+
+        Returns:
+            str: One of [Upcoming], [Active], [Completed], or [Overdue]
+        """
+        today = datetime.today().date()
+
+        if self.is_complete:
+            return "[Completed]"
+        elif today < self.start_date.date():
+            return "[Upcoming]"
+        elif self.is_overdue:
+            return "[Overdue]"
+        return "[Active]"
+
     def to_dict(self) -> dict:
         """
         Converts the tournament to a dictionary suitable for JSON serialization.
