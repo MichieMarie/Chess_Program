@@ -22,7 +22,7 @@ class StartTournamentCmd(BaseCommand):
         Args:
             tournament (Tournament): The tournament to start.
         """
-        self.tournament: Tournament = tournament
+        self.tournament = tournament
 
     def tournament_already_started(self) -> bool:
         """
@@ -31,10 +31,7 @@ class StartTournamentCmd(BaseCommand):
         Returns:
             bool: True if a round already exists; False otherwise.
         """
-        return (
-            self.tournament.current_round_index is not None
-            and self.tournament.current_round_index >= 0
-        )
+        return self.tournament.current_round_index >= 0
 
     def random_match_assignment(self) -> List[Match]:
         """
@@ -53,15 +50,10 @@ class StartTournamentCmd(BaseCommand):
 
         shuffle(players)
 
-        matches = []
-        for i in range(0, len(players), 2):
-            matches.append(
-                Match(
-                    player1=players[i],
-                    player2=players[i + 1],
-                )
-            )
-
+        matches = [
+            Match(player1=players[i], player2=players[i + 1])
+            for i in range(0, len(players), 2)
+        ]
         return matches
 
     def execute(self) -> Context:
