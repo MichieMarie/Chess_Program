@@ -5,13 +5,29 @@ from pathlib import Path
 from typing import List, Optional
 import json
 
-from .match import Match, PLAYER1, PLAYER2, DRAW
 from .round import Round
 from .player import Player
 
 
 @dataclass
 class Tournament:
+    """
+    Represents a chess tournament.
+
+    Attributes:
+        name (str): The name of the tournament.
+        start_date (datetime): When the tournament begins.
+        end_date (datetime): When the tournament ends.
+        venue (str): The location of the tournament.
+        players (List[dict[str, str]]): List of tournament registrants,
+            each with 'name', 'chess_id', and 'club_name'.
+        rounds (List[Round]): List of rounds in the tournament.
+        current_round_index (int): Index of the active round (-1 if none started).
+        num_rounds (int): Total number of rounds planned.
+        filepath (Optional[Path]): Path to the tournament's JSON file.
+        is_complete (bool): True if the tournament has concluded.
+    """
+
     name: str
     start_date: datetime
     end_date: datetime
@@ -54,24 +70,12 @@ class Tournament:
         return [Tournament.tournament_registrant(p) for p in players]
 
     def player_scores(self) -> dict[str, float]:
-        """
-        Calculates total tournament points for each player.
-
-        Returns:
-            dict[str, float]: Dictionary mapping player chess_id to cumulative score.
-        """
         scores: dict[str, float] = {p["chess_id"]: 0.0 for p in self.players}
-
         for rnd in self.rounds:
             for match in rnd.matches:
-                if match.winner == DRAW:
-                    scores[match.player1.chess_id] += 0.5
-                    scores[match.player2.chess_id] += 0.5
-                elif match.winner == PLAYER1:
-                    scores[match.player1.chess_id] += 1.0
-                elif match.winner == PLAYER2:
-                    scores[match.player2.chess_id] += 1.0
-
+                for player in [match.player1, match.player2]:
+                    cid = match._get_chess_id(player)
+                    scores[cid] += match.get_points(player)
         return scores
 
     def to_dict(self) -> dict:
@@ -103,52 +107,13 @@ class Tournament:
         Returns:
             Tournament: The reconstructed Tournament instance.
         """
-        players: List[dict[str, str]] = data.get("players", [])
-
-        raw_rounds = data.get("rounds", [])
-        rounds: List[Round] = []
-
-        if raw_rounds and isinstance(raw_rounds[0], list):
-            # Legacy format: list of match dicts per round
-            for idx, match_list in enumerate(raw_rounds, start=1):
-                matches = []
-                for m in match_list:
-                    p1_id, p2_id = m["players"]
-                    winner = m.get("winner")
-
-                    # Determine result string (for our app's format)
-                    if winner is None:
-                        result = DRAW
-                    elif winner == p1_id:
-                        result = PLAYER1
-                    elif winner == p2_id:
-                        result = PLAYER2
-                    else:
-                        result = None  # fallback
-
-                    match = Match(
-                        player1=Player(
-                            name="", email="", chess_id=p1_id, birthday="", club_name=""
-                        ),
-                        player2=Player(
-                            name="", email="", chess_id=p2_id, birthday="", club_name=""
-                        ),
-                        winner=result,
-                    )
-                    matches.append(match)
-
-                rounds.append(Round(matches=matches, round_number=idx))
-        else:
-            # Current format
-            rounds = [Round.deserialize(rdata) for rdata in raw_rounds]
-
         return cls(
             name=data["name"],
             start_date=datetime.fromisoformat(data["start_date"]),
             end_date=datetime.fromisoformat(data["end_date"]),
             venue=data["venue"],
-            players=players,
-            rounds=rounds,
+            players=data.get("players", []),
+            rounds=[Round.deserialize(r) for r in data.get("rounds", [])],
             current_round_index=data.get("current_round_index", -1),
             num_rounds=data.get("num_rounds", 4),
             filepath=filepath,

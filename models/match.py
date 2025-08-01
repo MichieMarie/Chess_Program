@@ -12,13 +12,16 @@ DRAW = "draw"
 @dataclass
 class Match:
     """
-    Represents a single match between two players in a round. Supports both Player objects and minimal dicts.
+    Represents a single match between two tournament registrants in a round.
+
+    Supports both full Player objects and minimal tournament registrant dictionaries
+    (with 'name', 'chess_id', and 'club_name').
 
     Attributes:
-        player1 (Player): The first player.
-        player2 (Player): The second player.
+        player1 (Player | dict): The first registrant.
+        player2 (Player | dict): The second registrant.
         winner (Optional[str]): "player1", "player2", "draw", or None.
-        completed (bool): True if match has been completed.
+        completed (bool): True if the match has been completed.
     """
 
     player1: Player | dict
@@ -30,10 +33,8 @@ class Match:
         """
         Retrieves the name for a tournament registrant.
 
-        Supports both full Player objects and minimal tournament player dictionaries.
-
         Args:
-            player (Player or dict): The registrant to extract the registrant name from.
+            player (Player | dict): The registrant.
 
         Returns:
             str: The registrant's name.
@@ -44,10 +45,8 @@ class Match:
         """
         Retrieves the chess ID for a tournament registrant.
 
-        Supports both full Player objects and minimal tournament player dictionaries.
-
         Args:
-            player (Player or dict): The registrant to extract the chess ID from.
+            player (Player | dict): The registrant.
 
         Returns:
             str: The registrant's chess ID.
@@ -58,10 +57,8 @@ class Match:
         """
         Retrieves the club name for a tournament registrant.
 
-        Supports both full Player objects and minimal tournament player dictionaries.
-
         Args:
-            player (Player or dict): The registrant to extract the club name from.
+            player (Player | dict): The registrant.
 
         Returns:
             str: The registrant's club name.
@@ -70,18 +67,19 @@ class Match:
 
     def is_draw(self) -> bool:
         """
-        Check if match is a draw.
+        Check if the match ended in a draw.
+
         Returns:
-            bool: True if a match is completed with no winners; False otherwise.
+            bool: True if completed and no winner declared.
         """
         return self.completed and self.winner == DRAW
 
     def get_points(self, player: Player | dict) -> float:
         """
-        Calculates how many points the given player earned in this match.
+        Calculates how many points the given registrant earned in this match.
 
         Args:
-            player (Player): The player to evaluate.
+            player (Player | dict): The registrant to evaluate.
 
         Returns:
             float: 1.0 for a win, 0.5 for a draw, 0.0 for a loss or if incomplete.
@@ -102,13 +100,13 @@ class Match:
 
     def update_result(self, winner: str) -> None:
         """
-         Sets the result of the match.
+        Sets the result of the match.
 
         Args:
             winner (str): One of "player1", "player2", or "draw".
 
         Raises:
-            ValueError: If the winner argument is not one of the accepted values.
+            ValueError: If the winner argument is not valid.
         """
         if winner not in {PLAYER1, PLAYER2, DRAW}:
             raise ValueError("Winner must be 'player1', 'player2', or 'draw'")
@@ -117,10 +115,10 @@ class Match:
 
     def serialize(self) -> dict:
         """
-        Serializes the match data to a dictionary for JSON output.
+        Serializes the match data for JSON output.
 
         Returns:
-            dict: A dictionary with player IDs, winner, and completion status.
+            dict: Contains chess IDs of both players, winner ID, and completion status.
         """
         if self.winner == DRAW:
             winner_id = None
@@ -141,16 +139,16 @@ class Match:
         }
 
     @classmethod
-    def from_dict(cls, data: dict, players_by_id: dict) -> "Match":
+    def from_dict(cls, data: dict, players_by_id: dict[str, Player | dict]) -> "Match":
         """
-        Reconstructs a Match object from a dictionary.
+        Reconstructs a Match from serialized data and registrants-by-ID lookup.
 
         Args:
-            data (dict): Dictionary with keys 'players', 'winner', and 'completed'.
-            players_by_id (dict): Dictionary mapping chess_id to Player objects.
+            data (dict): Contains 'players', 'winner', and 'completed' keys.
+            players_by_id (dict): Maps chess_id to registrants (either Player or dict).
 
         Returns:
-            Match: The reconstructed Match object.
+            Match: Reconstructed match instance.
         """
         player1_id, player2_id = data["players"]
         return cls(

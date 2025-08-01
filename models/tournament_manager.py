@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
+import re
 from typing import Optional
 
 from .tournament import Tournament
@@ -23,6 +24,9 @@ class TournamentManager:
         self.data_folder: Path = datadir
         self.tournaments: list[Tournament] = []
 
+        if not datadir.exists():
+            datadir.mkdir(parents=True, exist_ok=True)
+
         for filepath in datadir.iterdir():
             if filepath.is_file() and filepath.suffix == ".json":
                 try:
@@ -31,6 +35,15 @@ class TournamentManager:
                         self.tournaments.append(Tournament.from_dict(data, filepath))
                 except json.JSONDecodeError:
                     print(filepath, "is an invalid JSON file.")
+
+    def _safe_filename(self, name: str) -> str:
+        """
+        Converts a tournament name into a safe filename by removing
+        problematic characters and whitespace.
+        """
+        # Remove all characters except letters, numbers, hyphens, and underscores
+        safe = re.sub(r"[^\w\-]", "", name)
+        return safe.lower() + ".json"
 
     def create(
         self,
@@ -53,7 +66,8 @@ class TournamentManager:
         Returns:
             Tournament: The created and saved Tournament instance.
         """
-        filepath: Path = self.data_folder / (name.replace(" ", "") + ".json")
+        filepath: Path = self.data_folder / self._safe_filename(name)
+        print(f"[DEBUG] Saving to file: {filepath.name}")
 
         tournament: Tournament = Tournament(
             name=name,

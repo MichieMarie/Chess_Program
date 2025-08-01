@@ -53,18 +53,31 @@ class Round:
 
     @classmethod
     def from_list(
-        cls, match_data_list: List[dict], players_by_id: dict, round_number: int
+        cls,
+        match_data_list: List[dict],
+        registrants_by_id: dict[str, dict],
+        round_number: int,
     ) -> "Round":
         """
-        Reconstructs a Round from serialized match data and a player lookup.
+        Reconstructs a Round using tournament registrants instead of full Player objects.
 
         Args:
-            match_data_list (List[dict]): List of serialized match data.
-            players_by_id (dict): Mapping of player chess IDs to Player objects.
-            round_number (int): The round number to assign.
+            match_data_list (List[dict]): Serialized match data.
+            registrants_by_id (dict): Mapping of chess_id to registrant dictionaries.
+            round_number (int): Round number label.
 
         Returns:
-            Round: A Round object reconstructed from the provided data.
+            Round: A new Round instance built from registrant data.
         """
-        matches = [Match.from_dict(md, players_by_id) for md in match_data_list]
+        matches = []
+        for data in match_data_list:
+            p1_id, p2_id = data["players"]
+            match = Match(
+                player1=registrants_by_id[p1_id],
+                player2=registrants_by_id[p2_id],
+                winner=data.get("winner"),
+                completed=data.get("completed", False),
+            )
+            matches.append(match)
+
         return cls(round_number=round_number, matches=matches)
