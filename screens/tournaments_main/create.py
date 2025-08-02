@@ -13,7 +13,7 @@ class CreateTournament(BaseScreen):
     including name, venue, dates, and number of rounds.
     """
 
-    display: str = "Follow the input prompts to create a new tournament"
+    display: str = "Follow the input prompts to create a new tournament."
 
     def get_command(self) -> CreateTournamentCmd:
         """

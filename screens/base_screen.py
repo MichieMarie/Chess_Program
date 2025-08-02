@@ -83,7 +83,7 @@ class BaseScreen(ABC):
             except ValueError:
                 print("Please enter a valid date in the format dd-mm-yyyy.")
 
-    def input_rounds(self, **kwargs) -> int:
+    def input_rounds(self, prompt="Number of rounds", default="4") -> int:
         """
         Prompts the user for a valid whole number > 0 to represent number of rounds.
 
@@ -91,7 +91,7 @@ class BaseScreen(ABC):
             int: The validated number of rounds.
         """
         while True:
-            value: str = self.input_string(**kwargs)
+            value: str = self.input_string(prompt=prompt, default=default)
             try:
                 num = int(value)
                 if num > 0:
