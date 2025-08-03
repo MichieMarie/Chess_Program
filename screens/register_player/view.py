@@ -50,8 +50,8 @@ class PlayerRegistrationView(BaseScreen):
             choice = self.input_string("Choice").strip().upper()
 
             if choice == "C":
-                print("\nTo add a new player, exit to the Club Management system.\n")
-                return Context("tournament-view", tournament=self.tournament)
+                print("\nSwitching to Club Management system to add a new player...\n")
+                return NoopCmd("main-menu")
 
             if choice == "V":
                 return Context("tournament-view", tournament=self.tournament)
