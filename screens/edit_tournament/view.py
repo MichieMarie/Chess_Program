@@ -25,7 +25,7 @@ class EditTournamentView(BaseScreen):
     def get_command(self):
         print("\nPlease select your action from the options below:")
         print("N - Change tournament name")
-        print("L - Change venue")
+        print("L - Change venue name")
         print("D - Change start/end dates")
         print("P - Remove a registered player")
         print("X - Delete the tournament")
