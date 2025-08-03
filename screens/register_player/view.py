@@ -39,7 +39,7 @@ class PlayerRegistrationView(BaseScreen):
             self.display_players()
             print()
             print("\nPlease select your action from the options below:")
-            print("S - Search by name or Chess ID")
+            print("F - Search by name or Chess ID")
             print(
                 "# - Enter the number of a player to register them for this tournament."
             )
@@ -59,7 +59,7 @@ class PlayerRegistrationView(BaseScreen):
             if choice == "T":
                 return Context("tournaments-main")
 
-            if choice == "S":
+            if choice == "F":
                 while True:
                     query = (
                         self.input_string(

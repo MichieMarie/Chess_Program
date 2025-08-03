@@ -42,9 +42,9 @@ class AppMainMenu(BaseScreen):
             value: str = self.input_string().strip().upper()
 
             if value.upper() == "T":
-                return NoopCmd("manage-tournaments")
+                return NoopCmd("tournaments-main")
             elif value.upper() == "C":
-                return NoopCmd("manage-clubs")
+                return NoopCmd("main-menu")
             elif value.upper() == "X":
                 return ExitCmd()
             else:
