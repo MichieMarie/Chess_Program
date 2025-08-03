@@ -1,2 +1,2 @@
-from .register import PlayerRegistration
+from .register import run
 from .view import PlayerRegistrationView
