@@ -33,7 +33,10 @@ class CreateTournament(BaseScreen):
         data: dict[str, str | int | datetime | None] = {}
         for key, prompt, func in attrs:
             kwargs: dict[str, str] = {"prompt": prompt}
-            data[key] = func(**kwargs)
+            if func == self.input_rounds:
+                data[key] = func(prompt=prompt)  # only pass prompt
+            else:
+                data[key] = func(**kwargs)
 
         return CreateTournamentCmd(
             name=data["name"],
