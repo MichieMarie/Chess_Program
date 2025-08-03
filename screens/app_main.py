@@ -36,8 +36,8 @@ class AppMainMenu(BaseScreen):
         """
         while True:
             print("What would you like to do?")
-            print("Type T to access tournament management page.")
-            print("Type C to access club and player management page.")
+            print("Type T to access tournament management system.")
+            print("Type C to access club and player management system.")
             print("Type X to exit.")
             value: str = self.input_string().strip().upper()
 
