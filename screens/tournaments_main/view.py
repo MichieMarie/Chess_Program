@@ -49,8 +49,8 @@ class TournamentsMainView(BaseScreen):
         context = TournamentListCmd().execute()
         tournaments: list[Tournament] = context.kwargs.get("tournaments", [])
 
-        print("\nOptions:")
-        print("Enter the number of a tournament to view/manage it.")
+        print("\nPlease select your action from the options below:")
+        print("# - Enter the number of a tournament to view/manage it.")
         print("N - Create a new tournament")
         print("B - Back to App Menu")
 

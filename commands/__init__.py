@@ -1,5 +1,6 @@
 from .advance_round import AdvanceRoundCmd
 from .club_list import ClubListCmd
+from .context import Context
 from .create_club import ClubCreateCmd
 from .create_tournament import CreateTournamentCmd
 from .exit import ExitCmd
@@ -14,6 +15,7 @@ from .update_player import PlayerUpdateCmd
 __all__ = [
     "AdvanceRoundCmd",
     "ClubCreateCmd",
+    "Context",
     "CreateTournamentCmd",
     "ExitCmd",
     "ClubListCmd",

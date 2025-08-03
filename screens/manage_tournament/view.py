@@ -82,7 +82,7 @@ class TournamentView(BaseScreen):
 
     def get_command(self):
         """Prompts for the next action based on tournament status."""
-        print()  # Adds spacing after match/player display
+        print()  # Spacing after match/player display
         print("\nPlease select your action from the options below:")
 
         if self.tournament.is_complete:
