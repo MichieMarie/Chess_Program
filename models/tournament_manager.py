@@ -67,7 +67,6 @@ class TournamentManager:
             Tournament: The created and saved Tournament instance.
         """
         filepath: Path = self.data_folder / self._safe_filename(name)
-        print(f"[DEBUG] Saving to file: {filepath.name}")
 
         tournament: Tournament = Tournament(
             name=name,

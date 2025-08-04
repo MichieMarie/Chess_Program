@@ -1,4 +1,4 @@
-from commands.context import Context
+from commands import NoopCmd
 from models import Tournament
 from ..base_screen import BaseScreen
 
@@ -27,6 +27,7 @@ class EditTournamentView(BaseScreen):
         print("N - Change tournament name")
         print("L - Change venue name")
         print("D - Change start/end dates")
+        print("R - Change number of rounds")
         print("P - Remove a registered player")
         print("X - Delete the tournament")
         print("V - Return to View/Manage Tournament")
@@ -43,6 +44,16 @@ class EditTournamentView(BaseScreen):
         elif choice == "L":
             new_venue = self.input_string("New venue", default=self.tournament.venue)
             self.tournament.venue = new_venue
+            self.tournament.save()
+
+        elif choice == "R":
+
+            new_rounds = self.input_rounds(
+                "Number of rounds", default=str(self.tournament.num_rounds)
+            )
+
+            self.tournament.num_rounds = new_rounds
+
             self.tournament.save()
 
         elif choice == "D":
@@ -79,12 +90,12 @@ class EditTournamentView(BaseScreen):
                     print("Tournament deleted.")
                 else:
                     print("[!] Tournament file not found.")
-                return Context("tournaments-main")
+                return NoopCmd("tournaments-main")
 
         elif choice == "V":
-            return Context("tournament-view", tournament=self.tournament)
+            return NoopCmd("tournament-view", tournament=self.tournament)
 
         else:
             print("Invalid input.")
 
-        return Context("edit-tournament", tournament=self.tournament)
+        return NoopCmd("edit-tournament", tournament=self.tournament)

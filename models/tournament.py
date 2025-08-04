@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List, Optional
 import json
 
+from .match import Match
 from .round import Round
 from .player import Player
 
@@ -124,24 +125,29 @@ class Tournament:
 
     @classmethod
     def from_dict(cls, data: dict, filepath: Optional[Path] = None) -> Tournament:
-        """
-        Create a Tournament instance from a dictionary (e.g., loaded from JSON).
-        Handles both modern and legacy round formats.
+        players = data.get("players", [])
+        players_by_id = {p["chess_id"]: p for p in players}
 
-        Args:
-            data (dict): The dictionary of tournament data.
-            filepath (Optional[Path]): Filepath to the tournament file.
+        # Deserialize rounds and rebuild matches as Match objects
+        rounds = []
+        for round_data in data.get("rounds", []):
+            match_objs = [
+                Match.from_dict(m, players_by_id) for m in round_data.get("matches", [])
+            ]
+            round_obj = Round(
+                round_number=round_data.get("round_number", 1),
+                matches=match_objs,
+                is_complete=round_data.get("is_complete", False),
+            )
+            rounds.append(round_obj)
 
-        Returns:
-            Tournament: The reconstructed Tournament instance.
-        """
         return cls(
             name=data["name"],
             start_date=datetime.fromisoformat(data["start_date"]),
             end_date=datetime.fromisoformat(data["end_date"]),
             venue=data["venue"],
-            players=data.get("players", []),
-            rounds=[Round.deserialize(r) for r in data.get("rounds", [])],
+            players=players,
+            rounds=rounds,
             current_round_index=data.get("current_round_index", -1),
             num_rounds=data.get("num_rounds", 4),
             filepath=filepath,
@@ -156,5 +162,3 @@ class Tournament:
             raise ValueError("No filepath provided for saving.")
         with open(self.filepath, "w") as f:
             json.dump(self.to_dict(), f, default=str, indent=2)
-
-        print(f"[DEBUG] Saving tournament to: {self.filepath}")

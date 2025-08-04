@@ -1,4 +1,4 @@
-from commands import Context
+from commands.context import Context
 from screens import (
     EditTournamentView,
     TournamentView,
@@ -10,7 +10,6 @@ from screens.tournaments_main import CreateTournament
 from screens.manage_tournament import (
     start_tournament,
     advance_round,
-    match_results,
     tournament_report,
 )
 from screens.register_player import run as register_player_confirm
@@ -54,6 +53,8 @@ class MainApp:
 
                 else:
 
+                    print("[ERROR] No tournament found in context.")
+
                     self.context = Context("tournaments-main")
 
             elif screen == "start-tournament":
@@ -61,9 +62,6 @@ class MainApp:
 
             elif screen == "advance-round":
                 self.context = advance_round(self.context.tournament)
-
-            elif screen == "match-results":
-                self.context = match_results(self.context.tournament)
 
             elif screen == "tournament-report":
                 self.context = tournament_report(self.context.tournament)
@@ -73,9 +71,12 @@ class MainApp:
                 self.context = command()
 
             elif screen == "register-player-confirm":
-                self.context = register_player_confirm(
+
+                command = register_player_confirm(
                     self.context.tournament, self.context.player
                 )
+
+                self.context = command()
 
             elif screen == "edit-tournament":
                 command = EditTournamentView(self.context.tournament).run()

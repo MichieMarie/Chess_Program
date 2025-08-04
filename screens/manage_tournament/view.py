@@ -1,7 +1,7 @@
 from commands import NoopCmd
 from models import Tournament
 from models.match import PLAYER1, PLAYER2, DRAW
-
+from screens.match.update_result import run as update_match_result_screen
 from ..base_screen import BaseScreen
 
 
@@ -99,13 +99,18 @@ class TournamentView(BaseScreen):
             print("B - Return to App Menu")
 
         else:
-            print("# - Update a Match")
+            print("# - Type the number of a match to update")
             print("A - Advance to the Next Round")
             print("R - Generate a Tournament Report")
             print("T - Return to Tournament Menu")
             print("B - Return to App Menu")
 
         choice = self.input_string("Choice").strip().upper()
+
+        if choice.isdigit():
+            match_index = int(choice) - 1
+            update_match_result_screen(self.tournament, match_index)
+            return NoopCmd("tournament-view", tournament=self.tournament)
 
         if choice == "E" and self.tournament.current_round_index == -1:
             return NoopCmd("edit-tournament", tournament=self.tournament)
@@ -117,8 +122,6 @@ class TournamentView(BaseScreen):
             return NoopCmd("tournament-report", tournament=self.tournament)
         if choice == "A" and not self.tournament.is_complete:
             return NoopCmd("advance-round", tournament=self.tournament)
-        if choice == "#" and not self.tournament.is_complete:
-            return NoopCmd("match-results", tournament=self.tournament)
         if choice == "T":
             return NoopCmd("tournaments-main")
         if choice == "B":

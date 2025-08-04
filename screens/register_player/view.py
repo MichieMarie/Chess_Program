@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 
 from models import Tournament
-from commands import Context, NoopCmd
+from commands import NoopCmd
 
 from ..base_screen import BaseScreen
 

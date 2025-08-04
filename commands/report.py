@@ -158,7 +158,6 @@ class TournamentReportCmd(BaseCommand):
                 <h1>♛♞♝ <strong>{self.tournament.name}</strong> ♝♞♛</h1>
                 <h2>at {self.tournament.venue}</h2>
                 <h4>{self.tournament.start_date.strftime('%B %d, %Y')} to {self.tournament.end_date.strftime('%B %d, %Y')}</h4>
-                <div class="print-instruction">To save or print this report, press Ctrl+P (or Cmd+P on Mac).</div>
                 <h2>Players</h2>
                 {player_html}
                 {rounds_html}
@@ -183,7 +182,7 @@ class TournamentReportCmd(BaseCommand):
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(html)
 
-        webbrowser.open(filepath.as_uri())
+        webbrowser.open(filepath.resolve().as_uri())
 
         return Context(
             "tournament-view",

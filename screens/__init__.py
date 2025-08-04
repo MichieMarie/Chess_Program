@@ -5,10 +5,10 @@ from .main_menu import MainMenu
 from .manage_tournament import (
     TournamentView,
     advance_round,
-    match_results,
     tournament_report,
     start_tournament,
 )
+from .match import update_result
 from .register_player import PlayerRegistrationView
 from .players import PlayerEdit, PlayerView
 from .tournaments_main import TournamentsMainView, CreateTournament
@@ -27,7 +27,7 @@ __all__ = [
     "TournamentsMainView",
     "TournamentView",
     "start_tournament",
-    "match_results",
     "advance_round",
     "tournament_report",
+    "update_result",
 ]
