@@ -38,6 +38,10 @@ class CreateTournament(BaseScreen):
             else:
                 data[key] = func(**kwargs)
 
+        while data["end_date"] < data["start_date"]:
+            print("[!] End date cannot be before start date.")
+            data["end_date"] = self.input_tournament_dates(prompt="End date")
+
         return CreateTournamentCmd(
             name=data["name"],
             venue=data["venue"],

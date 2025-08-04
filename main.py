@@ -1,4 +1,5 @@
 from commands.context import Context
+from models.tournament_manager import TournamentManager
 from screens import (
     EditTournamentView,
     TournamentView,
@@ -30,8 +31,19 @@ class MainApp:
                 self.context = command()
 
             elif screen == "tournaments-main":
-                command = TournamentsMainView().run()
-                self.context = command()
+                manager = TournamentManager()
+                active_tournaments = [
+                    t for t in manager.tournaments if t.status_label == "[Active]"
+                ]
+
+                if len(active_tournaments) == 1:
+                    self.context = Context(
+                        "tournament-view", tournament=active_tournaments[0]
+                    )
+
+                else:
+                    command = TournamentsMainView().run()
+                    self.context = command()
 
             elif screen == "tournament-create":
                 cmd = CreateTournament().get_command()
@@ -42,19 +54,13 @@ class MainApp:
                 )
 
             elif screen == "tournament-view":
-
                 tournament = getattr(self.context, "tournament", None)
-
                 if tournament:
-
                     command = TournamentView(tournament).run()
-
                     self.context = command()
 
                 else:
-
                     print("[ERROR] No tournament found in context.")
-
                     self.context = Context("tournaments-main")
 
             elif screen == "start-tournament":
