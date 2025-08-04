@@ -51,6 +51,12 @@ class MatchResultsCmd(BaseCommand):
                     match.update_result(PLAYER2)
                 elif result == "d":
                     match.update_result(DRAW)
+        current_round = self.tournament.rounds[self.tournament.current_round_index]
+        if (
+            all(match.completed for match in current_round.matches)
+            and self.tournament.current_round_index + 1 == self.tournament.num_rounds
+        ):
+            self.tournament.is_complete = True
 
         self.tournament.save()
         return Context("tournament-view", tournament=self.tournament)

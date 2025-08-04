@@ -82,12 +82,12 @@ class MainApp:
                 command = EditTournamentView(self.context.tournament).run()
                 self.context = command()
 
-            elif screen == "exit":
-                print("Goodbye!")
-                break
-
             else:
-                print(f"[!] Unknown screen: {screen}")
+
+                if self.context.screen is not None:
+
+                    print(f"[!] Unknown screen: {screen}")
+
                 break
 
 

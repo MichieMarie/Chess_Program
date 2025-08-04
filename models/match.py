@@ -151,9 +151,22 @@ class Match:
             Match: Reconstructed match instance.
         """
         player1_id, player2_id = data["players"]
+        player1 = players_by_id[player1_id]
+        player2 = players_by_id[player2_id]
+
+        winner_id = data.get("winner")
+        if winner_id is None and data.get("completed"):
+            winner = DRAW
+        elif winner_id == player1_id:
+            winner = PLAYER1
+        elif winner_id == player2_id:
+            winner = PLAYER2
+        else:
+            winner = None  # Not yet decided or invalid
+
         return cls(
-            player1=players_by_id[player1_id],
-            player2=players_by_id[player2_id],
-            winner=data.get("winner"),
+            player1=player1,
+            player2=player2,
+            winner=winner,
             completed=data.get("completed", False),
         )

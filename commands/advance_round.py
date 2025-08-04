@@ -59,24 +59,12 @@ class AdvanceRoundCmd(BaseCommand):
                 message="Cannot advance: Tournament has not been started.",
             )
 
-        if self.tournament.current_round_index + 1 >= self.tournament.num_rounds:
-            self.tournament.is_complete = True
-            self.tournament.save()
-            return Context(
-                "tournament-view",
-                tournament=self.tournament,
-                message="All rounds have been played. The tournament is complete.",
-            )
-
         matches = self.generate_match_pairings()
         next_round_number = self.tournament.current_round_index + 1
 
         new_round = Round(round_number=next_round_number, matches=matches)
         self.tournament.rounds.append(new_round)
         self.tournament.current_round_index = next_round_number
-
-        if next_round_number + 1 >= self.tournament.num_rounds:
-            self.tournament.is_complete = True
 
         self.tournament.save()
         return Context("tournament-view", tournament=self.tournament)
