@@ -43,7 +43,7 @@ class Tournament:
     @staticmethod
     def tournament_registrant(player: Player) -> dict[str, str]:
         """
-        Extracts minimal tournament registration info from a full Player object.
+        Extracts specific tournament registration info from a full Player object.
 
         Args:
             player (Player): A Player instance.
@@ -71,6 +71,12 @@ class Tournament:
         return [Tournament.tournament_registrant(p) for p in players]
 
     def player_scores(self) -> dict[str, float]:
+        """
+        Calculate total scores for each player based on match results.
+
+        Returns:
+            dict[str, float]: A mapping of chess IDs to accumulated points.
+        """
         scores: dict[str, float] = {p["chess_id"]: 0.0 for p in self.players}
         for rnd in self.rounds:
             for match in rnd.matches:
@@ -110,6 +116,9 @@ class Tournament:
     def to_dict(self) -> dict:
         """
         Converts the tournament to a dictionary suitable for JSON serialization.
+
+        Returns:
+            JSON formatted dictionary of tournament data.
         """
         return {
             "name": self.name,
@@ -125,10 +134,19 @@ class Tournament:
 
     @classmethod
     def from_dict(cls, data: dict, filepath: Optional[Path] = None) -> Tournament:
+        """
+        Reconstructs a Tournament object from a JSON formatted dictionary.
+
+        Args:
+            data (dict): A JSON formatted dictionary.
+            filepath (Optional[Path]): Path to the tournament's JSON file.
+
+        Returns:
+            tournament: A Tournament instance.
+        """
         players = data.get("players", [])
         players_by_id = {p["chess_id"]: p for p in players}
 
-        # Deserialize rounds and rebuild matches as Match objects
         rounds = []
         for round_data in data.get("rounds", []):
             match_objs = [
