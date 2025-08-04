@@ -65,6 +65,8 @@ class AdvanceRoundCmd(BaseCommand):
         new_round = Round(round_number=next_round_number, matches=matches)
         self.tournament.rounds.append(new_round)
         self.tournament.current_round_index = next_round_number
-
+        if self.tournament.current_round_index >= self.tournament.num_rounds:
+            self.tournament.is_complete = True
+            print("Tournament marked as complete.")
         self.tournament.save()
         return Context("tournament-view", tournament=self.tournament)

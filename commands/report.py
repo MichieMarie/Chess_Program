@@ -62,7 +62,7 @@ class TournamentReportCmd(BaseCommand):
             str: The HTML string representing the match results.
         """
         rounds_html = []
-        total_rounds = len(self.tournament.rounds)
+        total_rounds = self.tournament.num_rounds
 
         for idx, rnd in enumerate(self.tournament.rounds):
             header = (

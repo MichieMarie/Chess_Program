@@ -38,9 +38,7 @@ class TournamentView(BaseScreen):
             cid = p["chess_id"]
             club = p["club_name"]
             pts = scores.get(cid, 0.0)
-            print(f"{i}. {name} ({cid})")
-            print(f"   Club: {club}")
-            print(f"   Points: {pts}\n")
+            print(f"{i}. {name} ({cid}) from {club} | Tournament Points: {pts}")
 
     def display_current_matches(self) -> None:
         """Displays match pairings and results for the current round."""
