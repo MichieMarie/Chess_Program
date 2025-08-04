@@ -109,7 +109,7 @@ class Match:
             ValueError: If the winner argument is not valid.
         """
         if winner not in {PLAYER1, PLAYER2, DRAW}:
-            raise ValueError("Winner must be 'player1', 'player2', or 'draw'")
+            raise ValueError("Winner must be 'player1', 'player2', or 'draw'.")
         self.winner = winner
         self.completed = True
 
@@ -118,7 +118,10 @@ class Match:
         Serializes the match data for JSON output.
 
         Returns:
-            dict: Contains chess IDs of both players, winner ID, and completion status.
+            dict: Dictionary with:
+                - 'players': List of player chess IDs
+                - 'winner': Chess ID of the winner, or None for a draw
+                - 'completed': Whether the match has been completed
         """
         if self.winner == DRAW:
             winner_id = None
@@ -162,7 +165,7 @@ class Match:
         elif winner_id == player2_id:
             winner = PLAYER2
         else:
-            winner = None  # Not yet decided or invalid
+            winner = None
 
         return cls(
             player1=player1,
