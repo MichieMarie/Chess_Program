@@ -1,7 +1,7 @@
 from random import shuffle
 from typing import List
 
-from models import Tournament, Round, Match
+from models import Match, Round, Tournament
 
 from .base import BaseCommand
 from .context import Context
@@ -35,7 +35,7 @@ class StartTournamentCmd(BaseCommand):
 
     def random_match_assignment(self) -> List[Match]:
         """
-        Randomly shuffle players and create match pairings.
+        Randomly shuffle players and generate first-round matchups.
 
         Returns:
             List[Match]: A list of randomized matchups.
@@ -78,5 +78,5 @@ class StartTournamentCmd(BaseCommand):
         self.tournament.current_round_index = 0
         self.tournament.save()
 
-        print("Tournament started. Round 1 created.")
+        print("Tournament started. Round 1 matches created.")
         return Context("tournament-view", tournament=self.tournament)
