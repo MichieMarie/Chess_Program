@@ -11,10 +11,10 @@ class TournamentListCmd(BaseCommand):
 
     def execute(self) -> Context:
         """
-        Executes the command to list tournaments and return the selected tournament view.
+        Execute the command to list tournaments sorted by start date (newest first).
 
         Returns:
-            Context: The context for the selected tournament list screen.
+            Context: A context object for the tournament list view, with all tournaments loaded.
         """
         tm = TournamentManager()
         tournaments = sorted(tm.get_all(), key=lambda t: t.start_date, reverse=True)
