@@ -13,9 +13,15 @@ class Context:
         self.run = run
         self.kwargs = kwargs
 
+        # Automatically assign kwargs as object attributes (like tournament, player)
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
     def set_args(self, **kwargs):
         """Syntactic sugar to set the kwargs attribute using dictionary unpacking"""
         self.kwargs = kwargs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def __str__(self):
         return f"<Context: {self.screen} | {self.kwargs}>"

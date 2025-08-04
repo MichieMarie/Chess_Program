@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 
 from models import Tournament
-from commands import Context
+from commands import Context, NoopCmd
 
 from ..base_screen import BaseScreen
 
@@ -49,15 +49,27 @@ class PlayerRegistrationView(BaseScreen):
 
             choice = self.input_string("Choice").strip().upper()
 
+            if choice.isdigit():
+                index = int(choice) - 1
+                if 0 <= index < len(self.players):
+                    return NoopCmd(
+                        "register-player-confirm",
+                        tournament=self.tournament,
+                        player=self.players[index],
+                    )
+                else:
+                    print("Invalid player number.")
+                continue
+
             if choice == "C":
                 print("\nSwitching to Club Management system to add a new player...\n")
                 return NoopCmd("main-menu")
 
             if choice == "V":
-                return Context("tournament-view", tournament=self.tournament)
+                return NoopCmd("tournament-view", tournament=self.tournament)
 
             if choice == "T":
-                return Context("tournaments-main")
+                return NoopCmd("tournaments-main")
 
             if choice == "F":
                 while True:
@@ -94,7 +106,7 @@ class PlayerRegistrationView(BaseScreen):
                     if selection.isdigit():
                         index = int(selection) - 1
                         if 0 <= index < len(results):
-                            return Context(
+                            return NoopCmd(
                                 "register-player-confirm",
                                 tournament=self.tournament,
                                 player=results[index],

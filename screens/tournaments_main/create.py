@@ -27,7 +27,7 @@ class CreateTournament(BaseScreen):
             ("venue", "Venue", self.input_string),
             ("start_date", "Start date", self.input_tournament_dates),
             ("end_date", "End date", self.input_tournament_dates),
-            ("rounds", "Number of rounds", self.input_rounds),
+            ("rounds", "Enter number of rounds (default is 4):", self.input_rounds),
         ]
 
         data: dict[str, str | int | datetime | None] = {}

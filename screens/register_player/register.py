@@ -1,8 +1,9 @@
-from commands import Context
+from commands import Context, NoopCmd
+from commands.base import BaseCommand
 from models import Tournament
 
 
-def run(tournament: Tournament, player: dict) -> Context:
+def run(tournament: Tournament, player: dict) -> BaseCommand:
     """
     Registers a player to a tournament, if not already registered.
 
@@ -21,4 +22,4 @@ def run(tournament: Tournament, player: dict) -> Context:
         tournament.save()
         print(f"{player['name']} has been registered for {tournament.name}.")
 
-    return Context("tournament-view", tournament=tournament)
+    return NoopCmd("tournament-view", tournament=tournament)

@@ -26,19 +26,35 @@ class MainApp:
         while True:
             screen = self.context.screen
 
-            # Screens with UI logic
             if screen == "app-main":
-                self.context = AppMainMenu().run()
+                command = AppMainMenu().run()
+                self.context = command()
 
             elif screen == "tournaments-main":
-                self.context = TournamentsMainView().run()
+                command = TournamentsMainView().run()
+                self.context = command()
 
             elif screen == "tournament-create":
                 cmd = CreateTournament().get_command()
                 self.context = cmd.execute()
+                print(
+                    self.context.screen,
+                    getattr(self.context, "tournament", None),
+                )
 
             elif screen == "tournament-view":
-                self.context = TournamentView(self.context.tournament).run()
+
+                tournament = getattr(self.context, "tournament", None)
+
+                if tournament:
+
+                    command = TournamentView(tournament).run()
+
+                    self.context = command()
+
+                else:
+
+                    self.context = Context("tournaments-main")
 
             elif screen == "start-tournament":
                 self.context = start_tournament(self.context.tournament)
@@ -53,7 +69,8 @@ class MainApp:
                 self.context = tournament_report(self.context.tournament)
 
             elif screen == "register-player":
-                self.context = PlayerRegistrationView(self.context.tournament).run()
+                command = PlayerRegistrationView(self.context.tournament).run()
+                self.context = command()
 
             elif screen == "register-player-confirm":
                 self.context = register_player_confirm(
@@ -61,7 +78,8 @@ class MainApp:
                 )
 
             elif screen == "edit-tournament":
-                self.context = EditTournamentView(self.context.tournament).run()
+                command = EditTournamentView(self.context.tournament).run()
+                self.context = command()
 
             elif screen == "exit":
                 print("Goodbye!")

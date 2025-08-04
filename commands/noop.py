@@ -13,3 +13,6 @@ class NoopCmd(BaseCommand):
     def execute(self):
         """Forward the screen and arguments to the context"""
         return Context(self.screen, **self.kwargs)
+
+    def __call__(self):
+        return self.execute()
