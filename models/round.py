@@ -12,6 +12,7 @@ class Round:
     Attributes:
         round_number (int): The number of the round in the tournament.
         matches (List[Match]): List of matches in the round.
+        is_complete (bool): Whether the round has been completed.
     """
 
     round_number: int
@@ -21,10 +22,10 @@ class Round:
     @property
     def name(self) -> str:
         """
-        Gets the display name of the round.
+        Gets the display name of the round (e.g., 'Round 1').
 
         Returns:
-            str: A string like 'Round 1'.
+            str: Display name of the round.
         """
         return f"Round {self.round_number}"
 
@@ -43,6 +44,15 @@ class Round:
 
     @classmethod
     def deserialize(cls, data: dict) -> "Round":
+        """
+        Deserializes a Round from a dictionary (used in JSON loading).
+
+        Args:
+            data (dict): Dictionary containing round information.
+
+        Returns:
+            Round: A new Round instance built from the given data.
+        """
         if "round_number" not in data:
             raise ValueError("Invalid round format")
         return cls(
