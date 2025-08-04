@@ -1,5 +1,6 @@
-import webbrowser
+import html
 from pathlib import Path
+import webbrowser
 
 from models import Tournament
 from models.match import PLAYER1, PLAYER2, DRAW
@@ -10,7 +11,7 @@ from .context import Context
 
 class TournamentReportCmd(BaseCommand):
     """
-    Command to generate a tournament report in HTML format and open it in the browser.
+    Command to generate a tournament report in HTML format and open it in the user's browser.
 
     The report includes player standings and round-by-round match results.
     Users can print or save the report as a PDF using their browser.
@@ -41,8 +42,8 @@ class TournamentReportCmd(BaseCommand):
                     p = players[i + j]
                     cell = f"""
                                 <td>
-                                    <strong>{p['name']}</strong><br>
-                                    From {p['club_name']}<br>
+                                    <strong>{html.escape(p['name'])}</strong><br>
+                                    From {html.escape(p['club_name'])}<br>
                                     Tournament points: {scores.get(p['chess_id'], 0.0)}
                                 </td>
                             """
@@ -73,8 +74,8 @@ class TournamentReportCmd(BaseCommand):
 
             match_cells = []
             for match in rnd.matches:
-                p1 = match._get_name(match.player1)
-                p2 = match._get_name(match.player2)
+                p1 = html.escape(match._get_name(match.player1))
+                p2 = html.escape(match._get_name(match.player2))
 
                 if match.winner == DRAW:
                     content = f"{p1}<br>{p2}<br><em>Result: Draw</em>"
@@ -108,6 +109,7 @@ class TournamentReportCmd(BaseCommand):
 
         return f"""
             <html>
+            
             <head>
             <style>
                 body {{
@@ -155,13 +157,14 @@ class TournamentReportCmd(BaseCommand):
             </style>
             </head>
             <body>
-                <h1>♛♞♝ <strong>{self.tournament.name}</strong> ♝♞♛</h1>
-                <h2>at {self.tournament.venue}</h2>
+                <h1>♛♞♝ <strong>{html.escape(self.tournament.name)}</strong> ♝♞♛</h1>
+                <h2>at {html.escape(self.tournament.venue)}</h2>
                 <h4>{self.tournament.start_date.strftime('%B %d, %Y')} to {self.tournament.end_date.strftime('%B %d, %Y')}</h4>
                 <h2>Players</h2>
                 {player_html}
                 {rounds_html}
             </body>
+            
             </html>
             """
 
