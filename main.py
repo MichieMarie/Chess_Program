@@ -1,11 +1,17 @@
 from commands.context import Context
 from models.tournament_manager import TournamentManager
+from models.club_manager import ClubManager
 from screens import (
     EditTournamentView,
     TournamentView,
     PlayerRegistrationView,
     TournamentsMainView,
     AppMainMenu,
+    MainMenu,
+    ClubCreate,
+    ClubView,
+    PlayerView,
+    PlayerEdit,
 )
 from screens.tournaments_main import CreateTournament
 from screens.manage_tournament import (
@@ -31,18 +37,27 @@ class MainApp:
                 self.context = command()
 
             elif screen == "tournaments-main":
+
+                source = getattr(self.context, "source", None)
+
                 manager = TournamentManager()
+
                 active_tournaments = [
                     t for t in manager.tournaments if t.status_label == "[Active]"
                 ]
 
-                if len(active_tournaments) == 1:
+                if source == "main-menu" and len(active_tournaments) == 1:
+
+                    # Only redirect from app main menu
+
                     self.context = Context(
                         "tournament-view", tournament=active_tournaments[0]
                     )
 
                 else:
+
                     command = TournamentsMainView().run()
+
                     self.context = command()
 
             elif screen == "tournament-create":
@@ -84,6 +99,26 @@ class MainApp:
 
                 self.context = command()
 
+            elif screen == "main-menu":
+                manager = ClubManager()
+                command = MainMenu(clubs=manager.clubs).run()
+                self.context = command()
+
+            elif screen == "club-create":
+                command = ClubCreate().run()
+                self.context = command()
+
+            elif screen == "club-view":
+                command = ClubView(**self.context.kwargs).run()
+                self.context = command()
+
+            elif screen == "player-view":
+                command = PlayerView(**self.context.kwargs).run()
+                self.context = command()
+
+            elif screen in ("player-edit", "player-create"):
+                command = PlayerEdit(**self.context.kwargs).run()
+                self.context = command()
             elif screen == "edit-tournament":
                 command = EditTournamentView(self.context.tournament).run()
                 self.context = command()

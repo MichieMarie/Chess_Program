@@ -16,6 +16,7 @@ class MainMenu(BaseScreen):
     def get_command(self):
         while True:
             print("Type C to create a club or a club number to view/edit it.")
+            print("Type B to go back to the program menu.")
             print("Type X to exit.")
             value = self.input_string()
             if value.isdigit():
@@ -24,5 +25,7 @@ class MainMenu(BaseScreen):
                     return NoopCmd("club-view", club=self.clubs[value - 1])
             elif value.upper() == "C":
                 return NoopCmd("club-create")
+            elif value.upper() == "B":
+                return NoopCmd("app-main")
             elif value.upper() == "X":
                 return ExitCmd()
