@@ -38,10 +38,17 @@ class TournamentManager:
 
     def _safe_filename(self, name: str) -> str:
         """
-        Converts a tournament name into a safe filename by removing
-        problematic characters and whitespace.
+        Convert a tournament name into a safe, lowercase filename.
+
+        Removes all characters except letters, numbers, hyphens, and underscores,
+        then appends '.json' to the result.
+
+        Args:
+            name (str): The original tournament name.
+
+        Returns:
+            str: A sanitized filename for saving the tournament
         """
-        # Remove all characters except letters, numbers, hyphens, and underscores
         safe = re.sub(r"[^\w\-]", "", name)
         return safe.lower() + ".json"
 
@@ -82,6 +89,9 @@ class TournamentManager:
 
     def get_all(self) -> list[Tournament]:
         """
-        Return all loaded tournaments.
+        Get a list of all tournaments currently loaded from disk.
+
+        Returns:
+            list[Tournament]: All loaded Tournament objects.
         """
         return self.tournaments
