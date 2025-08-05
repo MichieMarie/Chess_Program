@@ -1,5 +1,7 @@
 from datetime import datetime
+
 from models import TournamentManager, Tournament
+
 from .context import Context
 from .base import BaseCommand
 
@@ -25,8 +27,8 @@ class CreateTournamentCmd(BaseCommand):
 
         Args:
             name (str): Name of the tournament.
-            start_date (date): Start date.
-            end_date (date): End date.
+            start_date (datetime): Start date.
+            end_date (datetime): End date.
             venue (str | None): Venue name or None if blank.
             num_rounds (int): Total number of rounds.
         """
@@ -41,7 +43,7 @@ class CreateTournamentCmd(BaseCommand):
         Executes the tournament creation using pre-gathered data.
 
         Returns:
-            Context: Context showing the newly created tournament.
+            Context: Context for viewing the newly created tournament.
         """
         tm: TournamentManager = TournamentManager()
         tournament: Tournament = tm.create(
