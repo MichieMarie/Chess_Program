@@ -56,7 +56,7 @@ class AdvanceRoundCmd(BaseCommand):
             return Context(
                 "tournament-view",
                 tournament=self.tournament,
-                )
+            )
 
         matches = self.generate_match_pairings()
         next_round_number = self.tournament.current_round_index + 1
