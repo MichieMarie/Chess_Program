@@ -2,16 +2,25 @@ from commands import NoopCmd
 from models import Tournament
 from models.match import PLAYER1, PLAYER2, DRAW
 from screens.match.update_result import run as update_match_result_screen
+
 from ..base_screen import BaseScreen
 
 
 class TournamentView(BaseScreen):
     """
     Screen for viewing and managing a tournament.
-    Adjusts output and commands based on tournament status.
+
+    Displays header, players, current matches, and contextual options.
+    Command behavior adjusts based on tournament status (not started, in progress, or complete).
     """
 
     def __init__(self, tournament: Tournament):
+        """
+        Initialize the tournament view with the given tournament.
+
+        Args:
+            tournament (Tournament): The tournament to manage.
+        """
         self.tournament = tournament
 
     def display_header(self) -> None:
@@ -24,7 +33,7 @@ class TournamentView(BaseScreen):
 
     def display_players(self) -> None:
         """Prints registered players with club and tournament points, sorted by score."""
-        print("\n👥 Registered Players:\n")
+        print("\n👑 Registered Players 👑\n")
 
         scores = self.tournament.player_scores()
         players = sorted(
@@ -49,7 +58,7 @@ class TournamentView(BaseScreen):
             return
 
         rnd = self.tournament.rounds[current_index]
-        print(f"\n🕹️ Matches for Round {current_index + 1}:\n")
+        print(f"\n♟️️ Matches for Round {current_index + 1} ♟️\n")
 
         for i, match in enumerate(rnd.matches, 1):
             p1 = match._get_name(match.player1)
@@ -67,7 +76,11 @@ class TournamentView(BaseScreen):
                 print("   Result: [Not yet played]\n")
 
     def display(self) -> None:
-        """Displays tournament info, players, rounds, and matches based on state."""
+        """
+        Displays tournament overview including header, player standings, and match results.
+
+        Content and format adjust based on tournament status.
+        """
         self.display_header()
         self.display_players()
 
@@ -78,30 +91,39 @@ class TournamentView(BaseScreen):
             print(f"\nRound {round_num} of {self.tournament.num_rounds}")
             self.display_current_matches()
 
-    def get_command(self):
-        """Prompts for the next action based on tournament status."""
-        print()  # Spacing after match/player display
+    def get_command(self) -> NoopCmd:
+        """
+        Prompts the user to select an action based on tournament status.
+
+        Options vary depending on whether the tournament has not started, is in progress,
+        or has been completed. May include registering players, editing details,
+        advancing rounds, updating match results, or generating a report.
+
+        Returns:
+            NoopCmd: The next command to execute.
+        """
+        print()
         print("\nPlease select your action from the options below:")
 
         if self.tournament.is_complete:
-            print("R - Generate a Tournament Report")
-            print("T - Return to Tournament Menu")
-            print("B - Return to App Menu")
+            print("R - Generate a tournament report")
+            print("T - Return to the tournaments main menu")
+            print("B - Return to program main menu")
 
         elif self.tournament.current_round_index == -1:
-            print("P - Register a Player")
+            print("P - Register a player")
             print("E - Edit the tournament")
-            print("S - Start the Tournament")
-            print("R - Generate a Tournament Report")
-            print("T - Return to Tournament Menu")
-            print("B - Return to App Menu")
+            print("S - Start the tournament")
+            print("R - Generate a tournament report")
+            print("T - Return to the tournaments main menu")
+            print("B - Return to program main menu")
 
         else:
-            print("# - Type the number of a match to update")
-            print("A - Advance to the Next Round")
-            print("R - Generate a Tournament Report")
-            print("T - Return to Tournament Menu")
-            print("B - Return to App Menu")
+            print("# - Enter the number of a match to enter or update result")
+            print(f"A - Advance {self.tournament.name} to the next round")
+            print("R - Generate a tournament report")
+            print("T - Return to the tournaments main menu")
+            print("B - Return to the program main menu")
 
         choice = self.input_string("Choice").strip().upper()
 
@@ -125,5 +147,5 @@ class TournamentView(BaseScreen):
         if choice == "B":
             return NoopCmd("app-main")
 
-        print("Invalid input. Please choose a valid option.")
+        print("‼️ Invalid input. Please choose a valid option.")
         return NoopCmd("tournament-view", tournament=self.tournament)
