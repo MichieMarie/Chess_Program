@@ -1,9 +1,9 @@
-from commands import Context, NoopCmd
-from commands.base import BaseCommand
+from commands import NoopCmd
+
 from models import Tournament
 
 
-def run(tournament: Tournament, player: dict) -> BaseCommand:
+def run(tournament: Tournament, player: dict) -> NoopCmd:
     """
     Registers a player to a tournament, if not already registered.
 
@@ -12,14 +12,13 @@ def run(tournament: Tournament, player: dict) -> BaseCommand:
         player (dict): The selected player dictionary with name, chess_id, and club_name.
 
     Returns:
-        Context: Redirect to the tournament view screen.
+        NoopCmd: Redirect to the tournament view screen.
     """
-    # Check if player is already registered
     if any(p["chess_id"] == player["chess_id"] for p in tournament.players):
         print(f"{player['name']} is already registered.")
     else:
         tournament.players.append(player)
         tournament.save()
-        print(f"{player['name']} has been registered for {tournament.name}.")
+        print(f"✅ {player['name']} has been registered for {tournament.name}.")
 
     return NoopCmd("tournament-view", tournament=tournament)

@@ -26,6 +26,15 @@ class EditTournamentView(BaseScreen):
             print(f"{i}. {p['name']} ({p['chess_id']}) - {p['club_name']}")
 
     def get_command(self) -> NoopCmd:
+        """
+        Prompts the user to select an action and returns the appropriate command.
+
+        Edit options include tournament name, venue, start/end dates, number of rounds,
+        removing a registered player, or deleting the tournament.
+
+        Returns:
+            NoopCmd: The next command to execute.
+        """
         while True:
             print("\nPlease select your action from the options below:")
             print("N - Change tournament name")
@@ -34,7 +43,7 @@ class EditTournamentView(BaseScreen):
             print("R - Change number of rounds")
             print("P - Remove a registered player")
             print("X - Delete the tournament")
-            print("V - Return to View/Manage Tournament")
+            print(f"V - Return to view/manage {self.tournament.name}")
 
             choice = self.input_string("Choice").strip().upper()
 
