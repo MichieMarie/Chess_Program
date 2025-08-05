@@ -54,7 +54,7 @@ class TournamentView(BaseScreen):
         current_index = self.tournament.current_round_index
 
         if current_index < 0 or current_index >= len(self.tournament.rounds):
-            print("\n[!] No current round to display.")
+            print("\n‼️ No current round to display.")
             return
 
         rnd = self.tournament.rounds[current_index]
