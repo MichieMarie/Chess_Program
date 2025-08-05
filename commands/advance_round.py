@@ -26,8 +26,8 @@ class AdvanceRoundCmd(BaseCommand):
 
     def generate_match_pairings(self) -> List[Match]:
         """
-        Generate match pairings for the new round based on
-        cumulative player scores (descending).
+        Generate match pairings for the new round (after round 1), sorted by descending score.
+        Players are paired in order (1st vs 2nd, 3rd vs 4th, etc.).
 
         Returns:
             List[Match]: A list of new match pairings.
@@ -56,8 +56,7 @@ class AdvanceRoundCmd(BaseCommand):
             return Context(
                 "tournament-view",
                 tournament=self.tournament,
-                message="Cannot advance: Tournament has not been started.",
-            )
+                )
 
         matches = self.generate_match_pairings()
         next_round_number = self.tournament.current_round_index + 1
@@ -65,8 +64,17 @@ class AdvanceRoundCmd(BaseCommand):
         new_round = Round(round_number=next_round_number, matches=matches)
         self.tournament.rounds.append(new_round)
         self.tournament.current_round_index = next_round_number
-        if self.tournament.current_round_index >= self.tournament.num_rounds:
+
+        if self.tournament.current_round_index + 1 >= self.tournament.num_rounds:
             self.tournament.is_complete = True
-            print("Tournament marked as complete.")
+            message = "Tournament is now complete."
+        else:
+            message = None
+
         self.tournament.save()
-        return Context("tournament-view", tournament=self.tournament)
+
+        return Context(
+            "tournament-view",
+            tournament=self.tournament,
+            message=message,
+        )
