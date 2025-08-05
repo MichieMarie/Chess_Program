@@ -1,11 +1,12 @@
 from models import Tournament
+
 from .base import BaseCommand
 from .context import Context
 
 
 class RegisterPlayerCmd(BaseCommand):
     """
-    Command to initiate the player search screen for registration.
+    Command to navigate to the player search screen for registering participants into a tournament.
 
     Attributes:
         tournament (Tournament): The tournament players are registering into.
@@ -22,7 +23,7 @@ class RegisterPlayerCmd(BaseCommand):
 
     def execute(self) -> Context:
         """
-        Executes the command by sending the user to the player search screen.
+        Executes the search command by sending the user to the player search screen.
 
         Returns:
             Context: The player search context for the given tournament.
