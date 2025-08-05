@@ -1,4 +1,5 @@
 from .advance_round import AdvanceRoundCmd
+from .base import BaseCommand
 from .club_list import ClubListCmd
 from .context import Context
 from .create_club import ClubCreateCmd
@@ -14,6 +15,7 @@ from .update_player import PlayerUpdateCmd
 
 __all__ = [
     "AdvanceRoundCmd",
+    "BaseCommand",
     "ClubCreateCmd",
     "Context",
     "CreateTournamentCmd",
