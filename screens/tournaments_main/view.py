@@ -29,6 +29,7 @@ class TournamentsMainView(BaseScreen):
         Args:
             tournaments (list[Tournament]): List of tournaments to display.
         """
+        print("\n♟️Tournaments Menu♟️")
         print("\nAvailable Tournaments:\n")
         for i, t in enumerate(tournaments, 1):
             start = t.start_date.strftime("%d-%b-%Y")
@@ -36,13 +37,18 @@ class TournamentsMainView(BaseScreen):
             print(f"{i}. {t.name} — {t.venue} ({start} to {end}) {t.status_label}")
             if t.is_overdue:
                 print(
-                    "‼️ Warning: This tournament has ended, but one or more rounds remain open. "
-                    "Complete by submitting match results or advancing the round."
+                    f"‼️ Warning: {t.name} has ended, but one or more rounds remain open."
                 )
+                print("   Complete by submitting match results or advancing the round.")
 
     def get_command(self) -> BaseCommand:
         """
         Prompts the user to select an action and returns the appropriate command.
+
+        Options:
+            Select a tournament.
+            Create a new tournament.
+            Return to program menu.
 
         Returns:
             BaseCommand: The next command to execute.
@@ -51,7 +57,7 @@ class TournamentsMainView(BaseScreen):
         print()
         print("# - Enter the number of a tournament to view/manage it")
         print("N - Create a new tournament")
-        print("B - Return to App Menu")
+        print("B - Return to program main menu")
 
         while True:
             choice = self.input_string("Choice").strip().upper()

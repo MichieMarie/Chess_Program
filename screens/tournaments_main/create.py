@@ -9,8 +9,8 @@ class CreateTournament(BaseScreen):
     """
     Screen for entering tournament details and triggering tournament creation.
 
-    Prompts the user step-by-step for all required tournament fields,
-    including name, venue, dates, and number of rounds.
+    Prompts the user step-by-step to enter all required tournament details,
+    including name, venue, start/end dates, and number of rounds.
     """
 
     display: str = "Follow the input prompts to create a new tournament."
@@ -39,7 +39,7 @@ class CreateTournament(BaseScreen):
                 data[key] = func(**kwargs)
 
         while data["end_date"] < data["start_date"]:
-            print("[!] End date cannot be before start date.")
+            print("‼️End date cannot be before start date.")
             data["end_date"] = self.input_tournament_dates(prompt="End date")
 
         return CreateTournamentCmd(
