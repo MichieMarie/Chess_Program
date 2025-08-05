@@ -15,7 +15,7 @@ def confirm_round_advance() -> bool:
 
 def run(tournament: Tournament) -> Context:
     """
-    Confirms and advances the tournament to the next round if possible.
+    Prompts the user to confirm round advancement, and advances the tournament if confirmed.
 
     Args:
         tournament (Tournament): The tournament instance.
@@ -26,5 +26,5 @@ def run(tournament: Tournament) -> Context:
     if confirm_round_advance():
         return AdvanceRoundCmd(tournament).execute()
     else:
-        print("Round advancement canceled.")
+        print("‼️ Round advancement canceled.")
         return Context("tournament-view", tournament=tournament)
