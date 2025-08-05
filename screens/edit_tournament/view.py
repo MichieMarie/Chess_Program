@@ -13,6 +13,9 @@ class EditTournamentView(BaseScreen):
         self.tournament = tournament
 
     def display(self) -> None:
+        """
+        Displays tournament details and tournament edit options.
+        """
         print(f"\n♟️Editing Tournament: {self.tournament.name}♟️")
         print(f"Venue: {self.tournament.venue}")
         print(
@@ -22,80 +25,78 @@ class EditTournamentView(BaseScreen):
         for i, p in enumerate(self.tournament.players, 1):
             print(f"{i}. {p['name']} ({p['chess_id']}) - {p['club_name']}")
 
-    def get_command(self):
-        print("\nPlease select your action from the options below:")
-        print("N - Change tournament name")
-        print("L - Change venue name")
-        print("D - Change start/end dates")
-        print("R - Change number of rounds")
-        print("P - Remove a registered player")
-        print("X - Delete the tournament")
-        print("V - Return to View/Manage Tournament")
+    def get_command(self) -> NoopCmd:
+        while True:
+            print("\nPlease select your action from the options below:")
+            print("N - Change tournament name")
+            print("L - Change venue name")
+            print("D - Change start/end dates")
+            print("R - Change number of rounds")
+            print("P - Remove a registered player")
+            print("X - Delete the tournament")
+            print("V - Return to View/Manage Tournament")
 
-        choice = self.input_string("Choice").strip().upper()
+            choice = self.input_string("Choice").strip().upper()
 
-        if choice == "N":
-            new_name = self.input_string(
-                "New tournament name", default=self.tournament.name
-            )
-            self.tournament.name = new_name
-            self.tournament.save()
+            if choice == "N":
+                new_name = self.input_string(
+                    "New tournament name", default=self.tournament.name
+                )
+                self.tournament.name = new_name
+                self.tournament.save()
 
-        elif choice == "L":
-            new_venue = self.input_string("New venue", default=self.tournament.venue)
-            self.tournament.venue = new_venue
-            self.tournament.save()
+            elif choice == "L":
+                new_venue = self.input_string(
+                    "New venue", default=self.tournament.venue
+                )
+                self.tournament.venue = new_venue
+                self.tournament.save()
 
-        elif choice == "R":
+            elif choice == "R":
+                new_rounds = self.input_rounds(
+                    "Number of rounds", default=str(self.tournament.num_rounds)
+                )
+                self.tournament.num_rounds = new_rounds
+                self.tournament.save()
 
-            new_rounds = self.input_rounds(
-                "Number of rounds", default=str(self.tournament.num_rounds)
-            )
+            elif choice == "D":
+                new_start = self.input_tournament_dates(prompt="New start date")
+                new_end = self.input_tournament_dates(prompt="New end date")
+                self.tournament.start_date = new_start
+                self.tournament.end_date = new_end
+                self.tournament.save()
 
-            self.tournament.num_rounds = new_rounds
-
-            self.tournament.save()
-
-        elif choice == "D":
-            new_start = self.input_tournament_dates(prompt="New start date")
-            new_end = self.input_tournament_dates(prompt="New end date")
-            self.tournament.start_date = new_start
-            self.tournament.end_date = new_end
-            self.tournament.save()
-
-        elif choice == "P":
-            if not self.tournament.players:
-                print("\n❎ No players to remove.")
-            else:
-                for i, p in enumerate(self.tournament.players, 1):
-                    print(f"{i}. {p['name']} ({p['chess_id']}) - {p['club_name']}")
-                selection = self.input_string(
-                    "#️⃣#️⃣ Enter number to remove, or press Enter to cancel"
-                ).strip()
-                if selection.isdigit():
-                    index = int(selection) - 1
-                    if 0 <= index < len(self.tournament.players):
-                        removed = self.tournament.players.pop(index)
-                        self.tournament.save()
-                        print(f"✅ {removed['name']} has been removed.")
-
-        elif choice == "X":
-            confirm = self.input_string(
-                "‼️Are you sure you want to delete this tournament? Type YES to confirm"
-            ).strip()
-            if confirm == "YES":
-                path = self.tournament.filepath
-                if path and path.exists():
-                    path.unlink()
-                    print("✅ Tournament deleted.")
+            elif choice == "P":
+                if not self.tournament.players:
+                    print("\n❎ No players to remove.")
                 else:
-                    print("‼️ Tournament file not found.")
-                return NoopCmd("tournaments-main")
+                    for i, p in enumerate(self.tournament.players, 1):
+                        print(f"{i}. {p['name']} ({p['chess_id']}) - {p['club_name']}")
+                    selection = self.input_string(
+                        "#️⃣#️⃣ Enter number to remove, or press Enter to cancel"
+                    ).strip()
+                    if selection.isdigit():
+                        index = int(selection) - 1
+                        if 0 <= index < len(self.tournament.players):
+                            removed = self.tournament.players.pop(index)
+                            self.tournament.save()
+                            print(f"✅ {removed['name']} has been removed.")
 
-        elif choice == "V":
-            return NoopCmd("tournament-view", tournament=self.tournament)
+            elif choice == "X":
+                confirm = self.input_string(
+                    "‼️ Are you sure you want to delete this tournament? Type YES to confirm"
+                ).strip()
+                if confirm == "YES":
+                    path = self.tournament.filepath
+                    if path and path.exists():
+                        path.unlink()
+                        print("✅ Tournament deleted.")
+                    else:
+                        print("‼️ Tournament file not found.")
+                    return NoopCmd("tournaments-main")
 
-        else:
-            print("❗Invalid input. Choose from one of the options above.")
+            elif choice == "V":
+                return NoopCmd("tournament-view", tournament=self.tournament)
 
-        return NoopCmd("edit-tournament", tournament=self.tournament)
+            else:
+                print("❗ Invalid input. Choose from one of the options above.")
