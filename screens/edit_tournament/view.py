@@ -13,7 +13,7 @@ class EditTournamentView(BaseScreen):
         self.tournament = tournament
 
     def display(self) -> None:
-        print(f"\nEditing Tournament: {self.tournament.name}")
+        print(f"\n♟️Editing Tournament: {self.tournament.name}♟️")
         print(f"Venue: {self.tournament.venue}")
         print(
             f"Dates: {self.tournament.start_date.strftime('%d-%b-%Y')} to {self.tournament.end_date.strftime('%d-%b-%Y')}"
@@ -65,37 +65,37 @@ class EditTournamentView(BaseScreen):
 
         elif choice == "P":
             if not self.tournament.players:
-                print("\nNo players to remove.")
+                print("\n❎ No players to remove.")
             else:
                 for i, p in enumerate(self.tournament.players, 1):
                     print(f"{i}. {p['name']} ({p['chess_id']}) - {p['club_name']}")
                 selection = self.input_string(
-                    "Enter number to remove, or press Enter to cancel"
+                    "#️⃣#️⃣ Enter number to remove, or press Enter to cancel"
                 ).strip()
                 if selection.isdigit():
                     index = int(selection) - 1
                     if 0 <= index < len(self.tournament.players):
                         removed = self.tournament.players.pop(index)
                         self.tournament.save()
-                        print(f"{removed['name']} has been removed.")
+                        print(f"✅ {removed['name']} has been removed.")
 
         elif choice == "X":
             confirm = self.input_string(
-                "Are you sure you want to delete this tournament? Type YES to confirm"
+                "‼️Are you sure you want to delete this tournament? Type YES to confirm"
             ).strip()
             if confirm == "YES":
                 path = self.tournament.filepath
                 if path and path.exists():
                     path.unlink()
-                    print("Tournament deleted.")
+                    print("✅ Tournament deleted.")
                 else:
-                    print("[!] Tournament file not found.")
+                    print("‼️ Tournament file not found.")
                 return NoopCmd("tournaments-main")
 
         elif choice == "V":
             return NoopCmd("tournament-view", tournament=self.tournament)
 
         else:
-            print("Invalid input.")
+            print("❗Invalid input. Choose from one of the options above.")
 
         return NoopCmd("edit-tournament", tournament=self.tournament)

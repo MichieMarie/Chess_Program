@@ -63,10 +63,7 @@ class MainApp:
             elif screen == "tournament-create":
                 cmd = CreateTournament().get_command()
                 self.context = cmd.execute()
-                print(
-                    self.context.screen,
-                    getattr(self.context, "tournament", None),
-                )
+                print(f"✅ '{getattr(self.context, 'tournament').name}' created.\n")
 
             elif screen == "tournament-view":
                 tournament = getattr(self.context, "tournament", None)

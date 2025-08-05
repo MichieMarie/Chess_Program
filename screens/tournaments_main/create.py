@@ -25,8 +25,8 @@ class CreateTournament(BaseScreen):
         attrs: list[tuple[str, str, callable]] = [
             ("name", "Tournament name", self.input_string),
             ("venue", "Venue", self.input_string),
-            ("start_date", "Start date", self.input_tournament_dates),
-            ("end_date", "End date", self.input_tournament_dates),
+            ("start_date", "Start date (DD-MM-YYYY)", self.input_tournament_dates),
+            ("end_date", "End date (DD-MM-YYYY)", self.input_tournament_dates),
             ("rounds", "Enter number of rounds (default is 4):", self.input_rounds),
         ]
 

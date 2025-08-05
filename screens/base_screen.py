@@ -81,7 +81,7 @@ class BaseScreen(ABC):
             try:
                 return datetime.strptime(value, "%d-%m-%Y")
             except ValueError:
-                print("Please enter a valid date in the format dd-mm-yyyy.")
+                print("❗Please enter a valid date in the format dd-mm-yyyy.")
 
     def input_rounds(
         self, prompt="Enter number of rounds (default is 4):", default="4"
@@ -103,10 +103,10 @@ class BaseScreen(ABC):
                 if num > 0:
                     return num
                 else:
-                    print("Please enter a number greater than 0.")
+                    print("#️⃣ Please enter a number greater than 0.")
             except ValueError:
                 print(
-                    "Please enter a valid whole number (e.g., 3). No letters or decimals."
+                    "#️⃣#️⃣ Please enter a valid whole number (e.g., 3). No letters or decimals."
                 )
 
     def run(self):
