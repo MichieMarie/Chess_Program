@@ -28,6 +28,11 @@ class MatchResultsCmd(BaseCommand):
         """
         Applies results to selected matches in the current round.
 
+        Result codes:
+            "1" - player1 wins
+            "2" - player2 wins
+            "d" - draw
+
         Returns:
             Context: Updated context returning to the tournament view.
         """
@@ -37,7 +42,7 @@ class MatchResultsCmd(BaseCommand):
             return Context(
                 "tournament-view",
                 tournament=self.tournament,
-                message="No active round to enter results for. Use 'Advance Round' first.",
+                message="Round not active. Use 'Start the tournament' or 'Advance to the next round' first.",
             )
 
         current_round = self.tournament.rounds[current_index]
@@ -51,7 +56,6 @@ class MatchResultsCmd(BaseCommand):
                     match.update_result(PLAYER2)
                 elif result == "d":
                     match.update_result(DRAW)
-        current_round = self.tournament.rounds[self.tournament.current_round_index]
         if (
             all(match.completed for match in current_round.matches)
             and self.tournament.current_round_index + 1 == self.tournament.num_rounds
