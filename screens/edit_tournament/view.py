@@ -19,7 +19,8 @@ class EditTournamentView(BaseScreen):
         print(f"\n♟️Editing Tournament: {self.tournament.name}♟️")
         print(f"Venue: {self.tournament.venue}")
         print(
-            f"Dates: {self.tournament.start_date.strftime('%d-%b-%Y')} to {self.tournament.end_date.strftime('%d-%b-%Y')}"
+            f"Dates: {self.tournament.start_date.strftime('%d-%b-%Y')} "
+            f"to {self.tournament.end_date.strftime('%d-%b-%Y')}"
         )
         print(f"\nRegistered Players: {len(self.tournament.players)}")
         for i, p in enumerate(self.tournament.players, 1):

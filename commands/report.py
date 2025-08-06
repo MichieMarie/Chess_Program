@@ -109,7 +109,6 @@ class TournamentReportCmd(BaseCommand):
 
         return f"""
             <html>
-            
             <head>
             <style>
                 body {{
@@ -159,12 +158,12 @@ class TournamentReportCmd(BaseCommand):
             <body>
                 <h1>♛♞♝ <strong>{html.escape(self.tournament.name)}</strong> ♝♞♛</h1>
                 <h2>at {html.escape(self.tournament.venue)}</h2>
-                <h4>{self.tournament.start_date.strftime('%B %d, %Y')} to {self.tournament.end_date.strftime('%B %d, %Y')}</h4>
+                <h4>{self.tournament.start_date.strftime('%B %d, %Y')}
+                to {self.tournament.end_date.strftime('%B %d, %Y')}</h4>
                 <h2>Players</h2>
                 {player_html}
                 {rounds_html}
             </body>
-            
             </html>
             """
 
