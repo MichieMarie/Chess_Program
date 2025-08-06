@@ -68,10 +68,21 @@ class PlayerRegistrationView(BaseScreen):
             if choice.isdigit():
                 index = int(choice) - 1
                 if 0 <= index < len(self.players):
+                    selected = self.players[index]
+                    if any(
+                        p["chess_id"] == selected["chess_id"]
+                        for p in self.tournament.players
+                    ):
+                        input(
+                            f"✅ {selected['name']} is already registered. "
+                            f"Press Enter to select a different player."
+                        )
+                        continue
+
                     return NoopCmd(
                         "register-player-confirm",
                         tournament=self.tournament,
-                        player=self.players[index],
+                        player=selected,
                     )
                 else:
                     print("❗ Invalid player number.")
@@ -122,12 +133,22 @@ class PlayerRegistrationView(BaseScreen):
                     if selection.isdigit():
                         index = int(selection) - 1
                         if 0 <= index < len(results):
+                            selected = results[index]
+                            if any(
+                                p["chess_id"] == selected["chess_id"]
+                                for p in self.tournament.players
+                            ):
+                                input(
+                                    f"✅ {selected['name']} is already registered. "
+                                    f"Press Enter to select a different player."
+                                )
+                                continue
+
                             return NoopCmd(
                                 "register-player-confirm",
                                 tournament=self.tournament,
-                                player=results[index],
+                                player=selected,
                             )
-
                     print(
                         "‼️Invalid input. Please choose a valid option from menu above."
                     )
