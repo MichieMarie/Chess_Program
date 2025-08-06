@@ -23,12 +23,29 @@ from screens.register_player import run as register_player_confirm
 
 
 class MainApp:
-    """The main controller for the chess program."""
+    """
+    The main controller for the chess tournament application.
+
+    Manages navigation between screens based on the current context state.
+    Starts from the main application menu and routes to screens
+    for club management, tournament management, and player registration.
+    """
 
     def __init__(self):
+        """
+        Initialize the MainApp with the starting context.
+
+        Sets the initial screen to 'app-main'.
+        """
         self.context = Context("app-main")
 
     def run(self):
+        """
+        Launch the main application loop.
+
+        Continuously checks the current screen in context and executes the appropriate
+        view or command. Exits when an unknown or None screen is encountered.
+        """
         while True:
             screen = self.context.screen
 
@@ -37,27 +54,18 @@ class MainApp:
                 self.context = command()
 
             elif screen == "tournaments-main":
-
                 source = getattr(self.context, "source", None)
-
                 manager = TournamentManager()
-
                 active_tournaments = [
                     t for t in manager.tournaments if t.status_label == "[Active]"
                 ]
-
                 if source == "main-menu" and len(active_tournaments) == 1:
-
-                    # Only redirect from app main menu
-
                     self.context = Context(
                         "tournament-view", tournament=active_tournaments[0]
                     )
 
                 else:
-
                     command = TournamentsMainView().run()
-
                     self.context = command()
 
             elif screen == "tournament-create":
@@ -93,7 +101,6 @@ class MainApp:
                 command = register_player_confirm(
                     self.context.tournament, self.context.player
                 )
-
                 self.context = command()
 
             elif screen == "main-menu":
@@ -121,11 +128,8 @@ class MainApp:
                 self.context = command()
 
             else:
-
                 if self.context.screen is not None:
-
                     print(f"[!] Unknown screen: {screen}")
-
                 break
 
 
