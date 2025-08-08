@@ -128,3 +128,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Allow flake8 HTML report files
+!flake8_report/
+!flake8_report/index.html
+!flake8_report/styles.css
+!flake8_report/back.svg
+!flake8_report/file.svg

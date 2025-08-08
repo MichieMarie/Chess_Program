@@ -24,7 +24,7 @@ class TournamentView(BaseScreen):
         self.tournament = tournament
 
     def display_header(self) -> None:
-        """Prints basic tournament information."""
+        """Displays basic tournament name, venue, and date range."""
         print(f"\n{self.tournament.name}")
         print(f"Venue: {self.tournament.venue}")
         print(
@@ -33,7 +33,7 @@ class TournamentView(BaseScreen):
         )
 
     def display_players(self) -> None:
-        """Prints registered players with club and tournament points, sorted by score."""
+        """Displays registered players sorted by tournament points, including name, ID, and club."""
         print("\n👑 Registered Players 👑\n")
 
         scores = self.tournament.player_scores()
@@ -92,9 +92,9 @@ class TournamentView(BaseScreen):
             print(f"\nRound {round_num} of {self.tournament.num_rounds}")
             self.display_current_matches()
 
-    def get_command(self) -> NoopCmd:
+    def display_menu(self) -> NoopCmd:
         """
-        Prompts the user to select an action based on tournament status.
+        Displays a context-sensitive action menu and returns a NoopCmd for the next screen.
 
         Options vary depending on whether the tournament has not started, is in progress,
         or has been completed. May include registering players, editing details,

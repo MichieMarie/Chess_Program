@@ -13,7 +13,7 @@ class MainMenu(BaseScreen):
         for idx, club in enumerate(self.clubs, 1):
             print(idx, club.name)
 
-    def get_command(self):
+    def display_menu(self):
         while True:
             print("Type C to create a club or a club number to view/edit it.")
             print("Type B to go back to the program menu.")

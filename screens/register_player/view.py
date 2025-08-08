@@ -37,7 +37,7 @@ class PlayerRegistrationView(BaseScreen):
         for i, p in enumerate(self.players, 1):
             print(f"{i}. {p['name']} ({p['chess_id']}) - {p['club_name']}")
 
-    def get_command(self) -> NoopCmd:
+    def display_menu(self) -> NoopCmd:
         """
         Prompts for the next action from the user.
 

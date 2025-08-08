@@ -41,7 +41,7 @@ class TournamentsMainView(BaseScreen):
                 )
                 print("   Complete by submitting match results or advancing the round.")
 
-    def get_command(self) -> BaseCommand:
+    def display_menu(self) -> BaseCommand:
         """
         Prompts the user to select an action and returns the appropriate command.
 

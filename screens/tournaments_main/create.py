@@ -15,7 +15,7 @@ class CreateTournament(BaseScreen):
 
     display: str = "Follow the input prompts to create a new tournament."
 
-    def get_command(self) -> CreateTournamentCmd:
+    def display_menu(self) -> CreateTournamentCmd:
         """
         Gather input from the user and return a tournament creation command.
 

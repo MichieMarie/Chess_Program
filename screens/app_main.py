@@ -26,7 +26,7 @@ class AppMainMenu(BaseScreen):
         """
         return "\n ♟️ Welcome to the Chess Tournament Manager ♟️\n"
 
-    def get_command(self) -> ExitCmd | NoopCmd:
+    def display_menu(self) -> ExitCmd | NoopCmd:
         """
         Prompt the user for a top-level action.
 

@@ -17,7 +17,7 @@ class PlayerView(BaseScreen):
         print("Chess ID:", self.player.chess_id)
         print("Birthdate:", self.player.birthday)
 
-    def get_command(self):
+    def display_menu(self):
         while True:
             print("Type 'E' to edit the player, or 'B' to go back to club view.")
             action = self.input_string()

@@ -8,7 +8,7 @@ class ClubCreate(BaseScreen):
 
     display = "## Create club"
 
-    def get_command(self):
+    def display_menu(self):
         print("Type in the name of the club")
         name = self.input_string()
 

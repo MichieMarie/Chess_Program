@@ -10,7 +10,7 @@ class PlayerEdit(BaseScreen):
         self.club = club
         self.player = player
 
-    def get_command(self):
+    def display_menu(self):
         """Goes through the attributes and gets them from the user"""
         attrs = [
             ("name", "Player name", self.input_string),

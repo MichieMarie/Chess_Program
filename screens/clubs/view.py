@@ -15,7 +15,7 @@ class ClubView(BaseScreen):
         for idx, p in enumerate(self.club.players, 1):
             print(idx, p.name, p.email)
 
-    def get_command(self):
+    def display_menu(self):
         """Gets the command for this screen"""
         while True:
             print("Select a player to view/edit it, or 'C' to create a new player.")

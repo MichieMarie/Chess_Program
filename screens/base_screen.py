@@ -7,7 +7,7 @@ class BaseScreen(ABC):
     """Abstract class for screen interaction"""
 
     @abstractmethod
-    def get_command(self):
+    def display_menu(self):
         """Child classes must implement this method. It must return a Command."""
         pass
 
@@ -132,4 +132,4 @@ class BaseScreen(ABC):
             print(str(message))
 
         print("")
-        return self.get_command()
+        return self.display_menu()
