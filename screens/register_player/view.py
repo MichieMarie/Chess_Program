@@ -85,7 +85,10 @@ class PlayerRegistrationView(BaseScreen):
                         player=selected,
                     )
                 else:
-                    print("❗ Invalid player number.")
+                    input(
+                        f"❗ Invalid player number."
+                        f"Press Enter to select a different player."
+                    )
                 continue
 
             if choice == "C":
@@ -117,7 +120,10 @@ class PlayerRegistrationView(BaseScreen):
                     ]
 
                     if not results:
-                        print("\n❗ No players matched your search.\n")
+                        input(
+                            f"❗ No players matched your search."
+                            f"Press Enter to select a different player."
+                        )
                         continue
 
                     print("\nSearch Results:\n")
@@ -125,7 +131,7 @@ class PlayerRegistrationView(BaseScreen):
                         print(f"{i}. {p['name']} ({p['chess_id']}) - {p['club_name']}")
 
                     selection = self.input_string(
-                        "#️⃣#️⃣ Enter number to select, or press Enter to cancel"
+                        "# Enter number to select, or press Enter to cancel"
                     ).strip()
                     if not selection:
                         break
